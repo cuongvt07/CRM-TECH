@@ -20,11 +20,46 @@
         </button>
 
         <!-- Profile dropdown -->
-        <div class="relative">
-            <button class="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:shadow-solid" id="user-menu" aria-label="User menu" aria-haspopup="true">
-                <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin&background=1677FF&color=fff" alt="">
-                <span class="ml-2 font-medium text-gray-700">Admin</span>
-            </button>
+        <div class="relative" x-data="{ open: false }" @click.away="open = false" @close.stop="open = false">
+            <div>
+                <button @click="open = !open" class="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:shadow-solid hover:bg-gray-50 p-1" id="user-menu" aria-expanded="true" aria-haspopup="true">
+                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin&background=1677FF&color=fff" alt="">
+                    <span class="ml-2 font-medium text-gray-700 hidden sm:block">Admin</span>
+                    <i class="fa-solid fa-chevron-down ml-2 text-gray-400 text-xs hidden sm:block"></i>
+                </button>
+            </div>
+            
+            <div x-show="open" 
+                 x-transition:enter="transition ease-out duration-100" 
+                 x-transition:enter-start="transform opacity-0 scale-95" 
+                 x-transition:enter-end="transform opacity-100 scale-100" 
+                 x-transition:leave="transition ease-in duration-75" 
+                 x-transition:leave-start="transform opacity-100 scale-100" 
+                 x-transition:leave-end="transform opacity-0 scale-95" 
+                 style="display: none;"
+                 class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
+                
+                <div class="px-4 py-3">
+                    <p class="text-sm font-medium text-gray-900 truncate">admin@erp.com</p>
+                    <p class="text-xs text-gray-500 mt-1">Quản trị viên</p>
+                </div>
+                <div class="py-1">
+                    <a wire:navigate href="{{ route('profile') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                        <i class="fa-solid fa-user-gear mr-3 text-gray-400 group-hover:text-primary"></i>
+                        Hồ sơ cá nhân
+                    </a>
+                    <a href="#" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                        <i class="fa-solid fa-gear mr-3 text-gray-400 group-hover:text-primary"></i>
+                        Cài đặt
+                    </a>
+                </div>
+                <div class="py-1">
+                    <button wire:click="logout" class="group flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-3 text-red-500 group-hover:text-red-700"></i>
+                        Đăng xuất
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </header>
