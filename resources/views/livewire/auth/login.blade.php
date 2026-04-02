@@ -8,7 +8,7 @@
                 Đăng nhập ERP
             </h2>
             <p class="mt-2 text-center text-sm text-gray-600">
-                Nhập email và mật khẩu của bạn để tiếp tục
+                Nhập số điện thoại và mật khẩu của bạn để tiếp tục
             </p>
         </div>
         
@@ -28,14 +28,14 @@
 
             <div class="rounded-md shadow-sm space-y-4">
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Số điện thoại</label>
                     <div class="mt-1 relative rounded-md shadow-sm">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-envelope text-gray-400"></i>
+                            <i class="fa-solid fa-phone text-gray-400"></i>
                         </div>
-                        <input wire:model="email" id="email" type="email" autocomplete="email" required class="focus:ring-primary focus:border-primary block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 px-3 border" placeholder="admin@erp.com">
+                        <input wire:model="phone" id="phone" type="text" autocomplete="tel" required class="focus:ring-primary focus:border-primary block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 px-3 border" placeholder="0901234567">
                     </div>
-                    @error('email') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    @error('phone') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
                 <div>
@@ -76,7 +76,7 @@
             </div>
             
             <div class="mt-4 text-center">
-                <p class="text-xs text-gray-500">Tài khoản demo: admin@erp.com / password</p>
+                <p class="text-xs text-gray-500">Tài khoản demo: 0901234567 / password</p>
             </div>
         </form>
     </div>

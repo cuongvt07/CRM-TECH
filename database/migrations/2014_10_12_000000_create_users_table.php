@@ -15,15 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('code', 20)->unique();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'sales', 'production', 'warehouse', 'hr', 'viewer'])->default('viewer');
-            $table->string('department', 100)->nullable();
+            $table->string('phone', 15)->unique();
+            $table->enum('role', ['admin', 'director', 'manager', 'supervisor', 'team_leader', 'employee'])->default('employee');
+            $table->unsignedBigInteger('department_id')->nullable();
+            $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
             $table->enum('status', ['active', 'inactive', 'on_leave'])->default('active');
             $table->string('avatar')->nullable();
             $table->date('hire_date')->nullable();
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
