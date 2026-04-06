@@ -20,8 +20,10 @@ class Product extends Model
         'price',
         'min_stock',
         'max_stock',
+        'brand',
         'category_id',
         'warehouse_id',
+        'location',
         'status',
     ];
 

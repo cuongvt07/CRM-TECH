@@ -13,7 +13,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fa-solid fa-search text-gray-400"></i>
                 </div>
-                <input wire:model.live.debounce.300ms="search" type="text" class="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50" placeholder="Tìm theo mã hoặc tên sản phẩm...">
+                <input wire:model.live.debounce.300ms="search" type="text" class="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50" placeholder="Tìm theo mã, tên, hãng sx hoặc vị trí...">
             </div>
         </div>
         <div class="w-full md:w-64">
@@ -34,9 +34,10 @@
                     <tr>
                         <th class="px-6 py-4">Sản phẩm</th>
                         <th class="px-6 py-4">Mã SP</th>
+                        <th class="px-6 py-4">Hãng SX</th>
                         <th class="px-6 py-4">Danh mục</th>
-                        <th class="px-6 py-4">Giá bán</th>
-                        <th class="px-6 py-4 text-center">Tồn hiện tại</th>
+                        <th class="px-6 py-4">Vị trí kho</th>
+                        <th class="px-6 py-4 text-center">Tồn kho</th>
                         <th class="px-6 py-4 text-center">Trạng thái</th>
                         <th class="px-6 py-4 text-center">Thao tác</th>
                     </tr>
@@ -61,19 +62,20 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-gray-500 font-mono">{{ $product->code }}</td>
+                            <td class="px-6 py-4 text-gray-600 font-medium">{{ $product->brand ?? '---' }}</td>
                             <td class="px-6 py-4 text-gray-500">{{ $product->category?->name ?? '---' }}</td>
-                            <td class="px-6 py-4 text-gray-900 font-medium">{{ number_format($product->price, 0, ',', '.') }} ₫ / {{ $product->unit }}</td>
+                            <td class="px-6 py-4 text-gray-600 italic text-xs">{{ $product->location ?? '---' }}</td>
                             <td class="px-6 py-4 text-center font-semibold {{ ($product->inventory?->quantity ?? 0) < $product->min_stock ? 'text-red-500' : 'text-green-600' }}">
-                                {{ number_format($product->inventory?->quantity ?? 0) }}
+                                {{ number_format($product->inventory?->quantity ?? 0) }} <span class="text-[10px] text-gray-400 font-normal">{{ $product->unit }}</span>
                             </td>
-                            <td class="px-6 py-4 text-center">
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
                                 @if($product->status === 'active')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Active
+                                    <span class="px-2.5 py-1 inline-flex text-[10px] leading-4 font-black rounded-full bg-green-100 text-green-800 uppercase tracking-tighter">
+                                        Đang kinh doanh
                                     </span>
                                 @else
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        Inactive
+                                    <span class="px-2.5 py-1 inline-flex text-[10px] leading-4 font-black rounded-full bg-red-100 text-red-800 uppercase tracking-tighter">
+                                        Ngừng kinh doanh
                                     </span>
                                 @endif
                             </td>

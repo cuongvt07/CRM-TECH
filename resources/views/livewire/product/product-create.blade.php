@@ -35,10 +35,17 @@
                 <!-- Right Column - Details -->
                 <div class="md:col-span-2 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="code" class="block text-sm font-medium text-gray-700 mb-1">Mã sản phẩm (SKU) <span class="text-red-500">*</span></label>
-                            <input type="text" id="code" wire:model="code" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 @error('code') border-red-500 @enderror" placeholder="Ví dụ: SP001">
-                            @error('code') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="code" class="block text-sm font-medium text-gray-700 mb-1">Mã sản phẩm (SKU) <span class="text-red-500">*</span></label>
+                                <input type="text" id="code" wire:model="code" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 @error('code') border-red-500 @enderror" placeholder="Ví dụ: SP001">
+                                @error('code') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label for="brand" class="block text-sm font-medium text-gray-700 mb-1">Hãng sản xuất</label>
+                                <input type="text" id="brand" wire:model="brand" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 @error('brand') border-red-500 @enderror" placeholder="Ví dụ: Samsung, Apple...">
+                                @error('brand') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
                         </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -53,17 +60,24 @@
                             @error('category_id') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <div>
-                            <label for="warehouse_id" class="block text-sm font-medium text-gray-700 mb-1">Kho lưu trữ <span class="text-red-500">*</span></label>
-                            <select id="warehouse_id" wire:model="warehouse_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 @error('warehouse_id') border-red-500 @enderror">
-                                <option value="">-- Chọn Kho --</option>
-                                @if(isset($warehouses))
-                                    @foreach($warehouses as $wh)
-                                        <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->code }})</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                            @error('warehouse_id') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="warehouse_id" class="block text-sm font-medium text-gray-700 mb-1">Kho lưu trữ <span class="text-red-500">*</span></label>
+                                <select id="warehouse_id" wire:model="warehouse_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 @error('warehouse_id') border-red-500 @enderror">
+                                    <option value="">-- Chọn Kho --</option>
+                                    @if(isset($warehouses))
+                                        @foreach($warehouses as $wh)
+                                            <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->code }})</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                @error('warehouse_id') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Vị trí cụ thể (Kệ/Dãy...)</label>
+                                <input type="text" id="location" wire:model="location" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 @error('location') border-red-500 @enderror" placeholder="Ví dụ: Kệ A1, Tầng 2">
+                                @error('location') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                     </div>
 

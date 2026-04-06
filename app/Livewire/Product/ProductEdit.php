@@ -19,7 +19,11 @@ class ProductEdit extends Component
     public $unit;
     public $price;
     public $min_stock;
+    public $max_stock;
     public $category_id;
+    public $warehouse_id;
+    public $brand;
+    public $location;
     public $status;
     public $image;
     public $existing_image;
@@ -33,7 +37,11 @@ class ProductEdit extends Component
         $this->unit = $product->unit;
         $this->price = $product->price;
         $this->min_stock = $product->min_stock;
+        $this->max_stock = $product->max_stock;
         $this->category_id = $product->category_id;
+        $this->warehouse_id = $product->warehouse_id;
+        $this->brand = $product->brand;
+        $this->location = $product->location;
         $this->status = $product->status;
         $this->existing_image = $product->image_path;
     }
@@ -47,7 +55,11 @@ class ProductEdit extends Component
             'unit' => 'required|string|max:20',
             'price' => 'required|numeric|min:0',
             'min_stock' => 'required|integer|min:0',
+            'max_stock' => 'nullable|integer|gt:min_stock',
             'category_id' => 'nullable|exists:categories,id',
+            'warehouse_id' => 'nullable|exists:warehouses,id',
+            'brand' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
             'image' => 'nullable|image|max:2048', // max 2MB
         ]);
@@ -68,7 +80,11 @@ class ProductEdit extends Component
             'unit' => $this->unit,
             'price' => $this->price,
             'min_stock' => $this->min_stock,
+            'max_stock' => $this->max_stock,
             'category_id' => $this->category_id,
+            'warehouse_id' => $this->warehouse_id,
+            'brand' => $this->brand,
+            'location' => $this->location,
             'status' => $this->status,
             'image_path' => $imagePath,
         ]);
@@ -79,7 +95,8 @@ class ProductEdit extends Component
     public function render()
     {
         return view('livewire.product.product-edit', [
-            'categories' => Category::all()
+            'categories' => Category::all(),
+            'warehouses' => \App\Models\Warehouse::all(),
         ]);
     }
 }

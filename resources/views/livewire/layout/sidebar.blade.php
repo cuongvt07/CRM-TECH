@@ -28,7 +28,10 @@
             </button>
             <div x-show="open && sidebarOpen" x-transition class="pl-[3.25rem] pr-3 py-1 space-y-1">
                 <a wire:navigate href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'text-primary font-medium' : 'text-gray-500 hover:text-primary' }} block py-2 text-sm transition-colors">
-                    Danh sách sản phẩm
+                    Tên sản phẩm
+                </a>
+                <a wire:navigate href="{{ route('products.index') }}" class="text-gray-500 hover:text-primary block py-2 text-sm transition-colors opacity-75 italic">
+                    BOM sản phẩm
                 </a>
                 <a wire:navigate href="{{ route('categories.index') }}" class="{{ request()->routeIs('categories.*') ? 'text-primary font-medium' : 'text-gray-500 hover:text-primary' }} block py-2 text-sm transition-colors">
                     Danh mục sản phẩm

@@ -21,6 +21,8 @@ class ProductCreate extends Component
     public $category_id;
     public $warehouse_id;
     public $status = 'active';
+    public $brand;
+    public $location;
     public $image;
 
     public function save()
@@ -36,6 +38,8 @@ class ProductCreate extends Component
             'category_id' => 'nullable|exists:categories,id',
             'warehouse_id' => 'nullable|exists:warehouses,id',
             'status' => 'required|in:active,inactive',
+            'brand' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
             'image' => 'nullable|image|max:2048', // max 2MB
         ]);
 
@@ -54,6 +58,8 @@ class ProductCreate extends Component
             'max_stock' => $this->max_stock,
             'category_id' => $this->category_id,
             'warehouse_id' => $this->warehouse_id,
+            'brand' => $this->brand,
+            'location' => $this->location,
             'status' => $this->status,
             'image_path' => $imagePath,
         ]);
