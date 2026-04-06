@@ -24,6 +24,9 @@ class WarehouseDashboard extends Component
     public $historyToDate = '';
     public $historyType = ''; // '', 'import', 'export'
 
+    public $showNotifications = false;
+    public $feedbackNotes = [];
+
     public function clearSelected()
     {
         $this->selectedItems = [];
@@ -63,6 +66,72 @@ class WarehouseDashboard extends Component
         } catch (\Exception $e) {
             DB::rollBack();
         }
+    }
+
+    public function toggleNotifications()
+    {
+        $this->showNotifications = !$this->showNotifications;
+    }
+
+    public function confirmWarehouseStock($orderId, $status)
+    {
+        $order = Order::findOrFail($orderId);
+        $note = $this->feedbackNotes['Order-' . $orderId] ?? '';
+
+        $order->update([
+            'warehouse_status' => $status,
+            'warehouse_note' => $note,
+            'warehouse_confirmed_by' => auth()->id(),
+            'warehouse_confirmed_at' => now(),
+            'status' => $status === 'sufficient' ? 'CONFIRMED' : 'PENDING'
+        ]);
+
+        $this->sendAppNotification($order->created_by, 'Order', $order->id, $status, $note);
+        
+        unset($this->feedbackNotes['Order-' . $orderId]);
+        $this->dispatch('notify', ['message' => "Đã phản hồi đơn hàng #{$orderId}", 'type' => 'success']);
+    }
+
+    public function confirmProductionRequest($productionOrderId, $status)
+    {
+        $po = ProductionOrder::findOrFail($productionOrderId);
+        $note = $this->feedbackNotes['Production-' . $productionOrderId] ?? '';
+
+        $po->update([
+            'warehouse_status' => $status,
+            'warehouse_note' => $note,
+            'warehouse_confirmed_by' => auth()->id(),
+            'warehouse_confirmed_at' => now(),
+        ]);
+
+        $targetUser = $po->assigned_to ?: 1; 
+        $this->sendAppNotification($targetUser, 'ProductionOrder', $po->id, $status, $note);
+
+        unset($this->feedbackNotes['Production-' . $productionOrderId]);
+        $this->dispatch('notify', ['message' => "Đã phản hồi yêu cầu sản xuất #{$productionOrderId}", 'type' => 'success']);
+    }
+
+    private function sendAppNotification($userId, $refType, $refId, $status, $note)
+    {
+        $labels = [
+            'sufficient' => 'Còn hàng',
+            'insufficient' => 'Hết hàng',
+            'pending_production' => 'Chờ sản xuất',
+            'delivering' => 'Đang soạn hàng'
+        ];
+        $statusLabel = $labels[$status] ?? $status;
+        $title = "Kho phản hồi: {$statusLabel}";
+        $prefix = $refType === 'Order' ? "Đơn hàng #{$refId}" : "Lệnh SX #{$refId}";
+
+        AppNotification::create([
+            'user_id' => $userId,
+            'type' => 'warehouse_confirmation',
+            'title' => $title,
+            'message' => "{$prefix} - Phản hồi: {$statusLabel}. Nội dung: " . ($note ?: 'Không có'),
+            'reference_type' => $refType,
+            'reference_id' => $refId,
+            'is_read' => false,
+        ]);
     }
 
     public function getSelectedWarehouseCode()
@@ -120,10 +189,26 @@ class WarehouseDashboard extends Component
         }
         $transactions = $txnQuery->get();
 
+        // ===== Notifications =====
+        $pendingOrders = Order::where('status', 'PENDING')
+            ->whereIn('warehouse_status', ['pending', 'insufficient', 'delivering'])
+            ->with(['items.product'])
+            ->latest()
+            ->get();
+
+        $pendingProductionOrders = ProductionOrder::where('status', 'pending')
+            ->where('warehouse_status', 'pending')
+            ->with(['product', 'order'])
+            ->latest()
+            ->get();
+
         return view('livewire.warehouse.warehouse-dashboard', [
             'warehouses' => $warehouses,
             'inventoryItems' => $inventoryItems,
             'transactions' => $transactions,
+            'pendingOrders' => $pendingOrders,
+            'pendingProductionOrders' => $pendingProductionOrders,
+            'totalPending' => $pendingOrders->count() + $pendingProductionOrders->count(),
         ]);
     }
 }

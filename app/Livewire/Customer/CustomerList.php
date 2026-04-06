@@ -39,6 +39,12 @@ class CustomerList extends Component
         $this->showModal = true;
     }
 
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetErrorBag();
+    }
+
     public function save()
     {
         $this->validate([

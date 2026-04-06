@@ -4,25 +4,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ $title ?? 'ERP System' }}</title>
-        <!-- Use Tailwind CDN as fallback for dev without Node.js -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            primary: '#1677FF',
-                            success: '#52C41A',
-                            warning: '#FAAD14',
-                            error: '#FF4D4F',
-                            neutral: '#8C8C8C',
-                            surface: '#FFFFFF',
-                        }
-                    }
-                }
-            }
-        </script>
-        {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+        
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
     <body class="bg-[#F5F5F5] text-gray-800">

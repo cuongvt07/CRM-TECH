@@ -43,7 +43,7 @@ class Header extends Component
             'warehouse_note' => $note,
             'warehouse_confirmed_by' => auth()->id(),
             'warehouse_confirmed_at' => now(),
-            'status' => $status === 'sufficient' ? 'PROCESSING' : 'PENDING'
+            'status' => $status === 'sufficient' ? 'CONFIRMED' : 'PENDING'
         ]);
 
         $this->sendNotification($order->created_by, 'Order', $order->id, $status, $note);

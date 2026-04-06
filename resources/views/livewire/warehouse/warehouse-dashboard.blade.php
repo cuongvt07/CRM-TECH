@@ -37,18 +37,168 @@
 
 
     {{-- HEADER --}}
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-            <h2 class="text-2xl font-semibold text-gray-800">Quản lý Kho</h2>
-            <p class="text-gray-500 mt-1">Nhập kho · Xuất kho · Tồn kho — 3 kho: Nguyên liệu, Vật tư, Thành phẩm</p>
+    <div class="p-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3 no-print">
+        <div class="flex flex-col">
+            <h1 class="text-2xl font-black text-gray-900 tracking-tighter uppercase flex items-center">
+                <i class="fa-solid fa-warehouse mr-2.5 text-red-600 shadow-sm shadow-red-200"></i> Quản lý kho vận
+            </h1>
+            <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mt-0.5">Hệ thống điều phối & Lưu kho thông minh</p>
         </div>
         <div class="flex items-center space-x-3 mb-4 sm:mb-0 no-print">
-            <button onclick="window.print()" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center text-sm font-medium">
-                <i class="fa-solid fa-print mr-2 {{ count($selectedItems) > 0 || count($selectedTransactions) > 0 ? 'text-primary animate-bounce' : '' }}"></i> 
+            {{-- Notification Bell --}}
+            <div x-data="{ open: false }">
+            <button @click="open = true" 
+                        style="padding: 6px 14px !important;"
+                        class="rounded-lg transition-all relative border {{ $totalPending > 0 ? 'bg-red-600 border-red-700 text-white shadow-lg shadow-red-200' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                    <i class="fa-solid fa-bell text-lg {{ $totalPending > 0 ? 'animate-vibrate' : '' }}"></i>
+                    @if($totalPending > 0)
+                        <span class="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-yellow-400 text-red-900 text-[10px] font-black flex items-center justify-center border-2 border-white shadow-sm">
+                            {{ $totalPending }}
+                        </span>
+                    @endif
+                </button>
+
+                {{-- Notification Modal (Popup) --}}
+                <div x-show="open" 
+                     class="fixed inset-0 z-[2000] overflow-y-auto" 
+                     style="display: none;">
+                    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        {{-- Overlay --}}
+                        <div x-show="open" 
+                             x-transition:enter="ease-out duration-300" 
+                             x-transition:enter-start="opacity-0" 
+                             x-transition:enter-end="opacity-100" 
+                             x-transition:leave="ease-in duration-200" 
+                             x-transition:leave-start="opacity-100" 
+                             x-transition:leave-end="opacity-0" 
+                             @click="open = false"
+                             class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75 focus:outline-none" aria-hidden="true"></div>
+
+                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                        {{-- Modal Content --}}
+                        <div x-show="open" 
+                             x-transition:enter="ease-out duration-300" 
+                             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                             x-transition:leave="ease-in duration-200" 
+                             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                             class="inline-block w-full max-w-6xl overflow-hidden text-left align-middle transition-all transform bg-white shadow-3xl rounded-3xl border-4 border-white">
+                            
+                            <div class="px-8 py-6 bg-gradient-to-r from-red-600 to-red-500 flex justify-between items-center text-white relative">
+                                <div class="flex items-center">
+                                    <div class="bg-white/20 p-3 rounded-xl mr-5 shadow-inner">
+                                        <i class="fa-solid fa-bell-concierge text-3xl animate-pulse"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-black uppercase tracking-tighter text-2xl leading-none">Danh sách yêu cầu từ các phòng ban</h3>
+                                        <p class="text-[11px] opacity-80 font-bold uppercase mt-1 tracking-widest flex items-center">
+                                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-ping"></span> 
+                                            Trung tâm điều phối kho vận & Sản xuất
+                                        </p>
+                                    </div>
+                                </div>
+                                <button @click="open = false" class="bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all hover:rotate-90">
+                                    <i class="fa-solid fa-xmark text-2xl"></i>
+                                </button>
+                            </div>
+
+                            <div class="max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 bg-gray-50/30">
+                                @if($totalPending > 0)
+                                    <div class="p-0">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead class="sticky top-0 bg-gray-100/95 backdrop-blur-sm z-10 shadow-sm">
+                                                <tr>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase text-gray-500 tracking-widest border-b">Nguồn</th>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase text-gray-500 tracking-widest border-b">Đơn hàng</th>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase text-gray-500 tracking-widest border-b">Mặt hàng</th>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase text-gray-500 tracking-widest border-b">Ghi chú</th>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase text-gray-500 tracking-widest border-b text-center">Xác nhận</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100 bg-white">
+                                                {{-- Sales Orders --}}
+                                                @foreach($pendingOrders as $order)
+                                                    <tr class="hover:bg-blue-50/30 transition-colors group">
+                                                        <td class="px-4 py-3 whitespace-nowrap align-top border-r border-gray-50">
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black bg-red-50 text-red-700 border border-red-100 uppercase">Kinh doanh</span>
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top border-r border-gray-50">
+                                                            <div class="text-xs font-black text-gray-900">#ORD_{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</div>
+                                                            <div class="text-[10px] text-blue-800 font-bold">{{ $order->customer_name }}</div>
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top border-r border-gray-50">
+                                                            @foreach($order->items as $item)
+                                                                <div class="text-[10px] text-gray-600 truncate max-w-[150px]">{{ $item->product?->name }} (x{{ $item->quantity }})</div>
+                                                            @endforeach
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top border-r border-gray-50">
+                                                            <textarea wire:model="feedbackNotes.Order-{{ $order->id }}" class="w-full text-[10px] rounded-lg border-gray-200 h-12 bg-gray-50 focus:ring-red-500"></textarea>
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top">
+                                                            <div class="flex gap-1">
+                                                                <button @click="open = false" wire:click="confirmWarehouseStock({{ $order->id }}, 'sufficient')" class="px-2 py-1 bg-green-600 text-white rounded text-[9px] font-black uppercase">OK</button>
+                                                                <button @click="open = false" wire:click="confirmWarehouseStock({{ $order->id }}, 'insufficient')" class="px-2 py-1 bg-red-600 text-white rounded text-[9px] font-black uppercase">Hết</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                                {{-- Production Orders --}}
+                                                @foreach($pendingProductionOrders as $po)
+                                                    <tr class="hover:bg-blue-50/30 transition-colors group">
+                                                        <td class="px-4 py-3 whitespace-nowrap align-top border-r border-gray-50">
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-50 text-blue-700 border border-blue-100 uppercase">Sản xuất</span>
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top border-r border-gray-50">
+                                                            <div class="text-xs font-black text-gray-900">#PO_{{ str_pad($po->id, 4, '0', STR_PAD_LEFT) }}</div>
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top border-r border-gray-50">
+                                                            <div class="text-[10px] text-gray-600">{{ $po->product?->name }} (x{{ $po->quantity }})</div>
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top border-r border-gray-50">
+                                                            <textarea wire:model="feedbackNotes.Production-{{ $po->id }}" class="w-full text-[10px] rounded-lg border-gray-200 h-12 bg-gray-50 focus:ring-blue-500"></textarea>
+                                                        </td>
+                                                        <td class="px-4 py-3 align-top">
+                                                            <div class="flex gap-1">
+                                                                <button @click="open = false" wire:click="confirmProductionRequest({{ $po->id }}, 'sufficient')" class="px-2 py-1 bg-green-600 text-white rounded text-[9px] font-black uppercase">OK</button>
+                                                                <button @click="open = false" wire:click="confirmProductionRequest({{ $po->id }}, 'insufficient')" class="px-2 py-1 bg-red-600 text-white rounded text-[9px] font-black uppercase">Hết</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-20 text-gray-400 opacity-60">
+                                        <div class="relative inline-block mb-6">
+                                            <i class="fa-solid fa-mug-hot text-7xl"></i>
+                                            <i class="fa-solid fa-check absolute -bottom-2 -right-2 text-3xl text-green-500 bg-white rounded-full p-1 shadow-sm"></i>
+                                        </div>
+                                        <p class="text-lg font-black uppercase tracking-tighter">Kho hiện không có yêu cầu nào mới!</p>
+                                        <p class="text-sm mt-2">Dữ liệu sẽ được tự động cập nhật khi có đơn hàng mới.</p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <div class="bg-gray-100 px-6 py-4 flex justify-between items-center text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+                                <span>Hệ thống CRM v2.0</span>
+                                <span>{{ now()->format('d/m/Y H:i') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="window.print()" class="bg-gray-900 border border-gray-900 text-white hover:bg-black px-4 py-1.5 rounded-lg shadow-md transition-all flex items-center text-xs font-black uppercase tracking-widest">
+                <i class="fa-solid fa-print mr-2 {{ count($selectedItems) > 0 || count($selectedTransactions) > 0 ? 'text-yellow-400 animate-bounce' : '' }}"></i> 
                 @if(count($selectedItems) > 0 || count($selectedTransactions) > 0)
-                    In danh sách đã chọn ({{ count($selectedItems) + count($selectedTransactions) }})
+                    IN ĐÃ CHỌN ({{ count($selectedItems) + count($selectedTransactions) }})
                 @else
-                    In danh sách
+                    IN DANH SÁCH
                 @endif
             </button>
             @if(count($selectedItems) > 0 || count($selectedTransactions) > 0)
@@ -60,17 +210,50 @@
     </div>
 
     {{-- FILTER BAR --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col md:flex-row gap-4 items-center">
-        <div class="relative flex-1 w-full">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Tìm theo Mã SP, Tên hàng, NCC, Số HĐ..." class="pl-10 w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-sm">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 no-print">
+        {{-- Search Bar --}}
+        <div class="relative group">
+            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Số chứng từ, tên khách, ghi chú..." class="w-full pl-10 pr-4 py-2 rounded-xl border-gray-200 bg-white focus:ring-red-500 focus:border-red-500 text-xs shadow-sm group-hover:shadow-md transition-all placeholder:italic">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs"></i>
+            </div>
         </div>
-        <select wire:model.live="filterWarehouse" class="rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-sm min-w-[200px]">
-            <option value="">Tất cả Kho</option>
-            @foreach($warehouses as $wh)
-                <option value="{{ $wh->id }}">{{ $wh->name }}</option>
-            @endforeach
-        </select>
+
+        {{-- Warehouse Filter --}}
+        <div class="relative group">
+            <select wire:model.live="warehouseId" class="w-full pl-10 pr-10 py-2 rounded-xl border-gray-200 bg-white focus:ring-red-500 focus:border-red-500 text-xs shadow-sm appearance-none group-hover:shadow-md transition-all font-bold">
+                <option value="">Tất cả kho hàng</option>
+                @foreach($warehouses as $wh)
+                    <option value="{{ $wh->id }}">{{ $wh->name }}</option>
+                @endforeach
+            </select>
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <i class="fa-solid fa-warehouse text-gray-400 text-xs"></i>
+            </div>
+        </div>
+
+        {{-- Transaction Type Filter --}}
+        <div class="relative group">
+            <select wire:model.live="transactionType" class="w-full pl-10 pr-10 py-2 rounded-xl border-gray-200 bg-white focus:ring-red-500 focus:border-red-500 text-xs shadow-sm appearance-none group-hover:shadow-md transition-all font-bold">
+                <option value="">Tất cả nghiệp vụ</option>
+                <option value="IMPORT">Nhập kho</option>
+                <option value="EXPORT">Xuất kho</option>
+                <option value="RETURN">Hàng trả lại</option>
+                <option value="ADJUSTMENT">Điều chỉnh</option>
+            </select>
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <i class="fa-solid fa-right-left text-gray-400 text-xs"></i>
+            </div>
+        </div>
+
+        {{-- Action Summary (Compact) --}}
+        <div class="bg-gray-100/80 rounded-xl px-4 py-2 flex items-center justify-between border border-gray-200 shadow-inner">
+            <div class="flex flex-col">
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Tổng phát sinh</span>
+                <span class="text-xs font-black text-gray-900">{{ number_format($transactions->count()) }} dòng</span>
+            </div>
+            <i class="fa-solid fa-chart-line text-gray-400 opacity-30"></i>
+        </div>
     </div>
 
     {{-- SECTION 1: TỒN KHO --}}

@@ -108,19 +108,19 @@
     {{-- Create Modal --}}
     @if($showModal)
     <div class="fixed inset-0 z-[1001] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="$set('showModal', false)"></div>
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-4 text-center sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="closeModal"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-100">
+            <div class="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-2xl sm:w-full border border-gray-100 flex flex-col max-h-[90vh]">
                 <div class="bg-primary px-6 py-4 flex justify-between items-center text-white">
                     <h3 class="text-lg font-black uppercase tracking-tighter" id="modal-title">
                         <i class="fa-solid fa-user-plus mr-2"></i> THÊM KHÁCH HÀNG MỚI
                     </h3>
-                    <button wire:click="$set('showModal', false)" class="text-white/80 hover:text-white transition-colors">
+                    <button wire:click="closeModal" class="text-white/80 hover:text-white transition-colors">
                         <i class="fa-solid fa-xmark text-xl"></i>
                     </button>
                 </div>
-                <div class="bg-white px-6 py-6 scrollbar-thin scrollbar-thumb-gray-200 max-h-[80vh] overflow-y-auto">
+                <div class="bg-white px-6 py-6 scrollbar-thin scrollbar-thumb-gray-200 overflow-y-auto flex-1">
                     <div class="grid grid-cols-2 gap-6">
                         {{-- Name --}}
                         <div class="col-span-2">
@@ -182,7 +182,7 @@
                     </div>
                 </div>
                 <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                    <button wire:click="$set('showModal', false)" class="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 font-bold transition-all">
+                    <button wire:click="closeModal" class="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 font-bold transition-all">
                         HỦY
                     </button>
                     <button wire:click="save" class="px-8 py-2 bg-primary text-white rounded-xl shadow-lg shadow-primary/20 hover:bg-blue-600 font-bold transition-all">
