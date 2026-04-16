@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductionOrder extends Model
 {
@@ -12,6 +13,7 @@ class ProductionOrder extends Model
         'product_id',
         'quantity',
         'status', // pending, in_progress, qc, completed, failed
+        'bom_status',
         'assigned_to',
         'start_date',
         'end_date',
@@ -26,8 +28,13 @@ class ProductionOrder extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'actual_end_date' => 'date',
+        'actual_end_date' => 'datetime',
     ];
+
+    public function qaChecklists(): HasMany
+    {
+        return $this->hasMany(QaChecklist::class);
+    }
 
     public function order(): BelongsTo
     {

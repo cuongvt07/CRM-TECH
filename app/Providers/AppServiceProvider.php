@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Định dạng số sạch (Clean Number Formatting) cho toàn hệ thống
+        // Sử dụng: @nfmt($value)
+        \Illuminate\Support\Facades\Blade::directive('nfmt', function ($expression) {
+            return "<?php echo \App\Helpers\Helper::nfmt($expression); ?>";
+        });
     }
 }

@@ -16,19 +16,19 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow-sm p-6 border border-l-4 border-l-success border-gray-100 group hover:shadow-md transition-shadow">
             <h3 class="text-sm font-medium text-gray-500">Doanh thu hôm nay</h3>
-            <p class="text-2xl font-bold text-gray-900 mt-2">{{ number_format($todayRevenue, 0, ',', '.') }} đ</p>
+            <p class="text-2xl font-bold text-gray-900 mt-2">@nfmt($todayRevenue) đ</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm p-6 border border-l-4 border-l-primary border-gray-100 group hover:shadow-md transition-shadow">
             <h3 class="text-sm font-medium text-gray-500">Đơn hàng mới hôm nay</h3>
-            <p class="text-2xl font-bold text-gray-900 mt-2">{{ number_format($newOrdersCount) }}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-2">@nfmt($newOrdersCount)</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm p-6 border border-l-4 border-l-warning border-gray-100 group hover:shadow-md transition-shadow">
             <h3 class="text-sm font-medium text-gray-500">Đang sản xuất (Thiếu kho)</h3>
-            <p class="text-2xl font-bold text-gray-900 mt-2">{{ number_format($inProductionCount) }}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-2">@nfmt($inProductionCount)</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm p-6 border border-l-4 border-l-error border-gray-100 group hover:shadow-md transition-shadow">
             <h3 class="text-sm font-medium text-gray-500">Mặt hàng cảnh báo tồn</h3>
-            <p class="text-2xl font-bold text-gray-900 mt-2 {{ $lowStockCount > 0 ? 'text-red-600 animate-pulse' : '' }}">{{ number_format($lowStockCount) }}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-2 {{ $lowStockCount > 0 ? 'text-red-600 animate-pulse' : '' }}">@nfmt($lowStockCount)</p>
         </div>
     </div>
 
@@ -136,7 +136,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm font-bold text-primary">{{ number_format($staff->total_revenue, 0, ',', '.') }}</p>
+                            <p class="text-sm font-bold text-primary">@nfmt($staff->total_revenue)</p>
                             <p class="text-[10px] text-gray-400">VNĐ</p>
                         </div>
                     </div>

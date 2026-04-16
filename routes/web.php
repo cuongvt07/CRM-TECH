@@ -62,8 +62,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/warehouse', \App\Livewire\Warehouse\WarehouseDashboard::class)->name('warehouse.index');
     Route::get('/warehouse/transaction/{type}/{warehouse_code}/{productId?}', \App\Livewire\Warehouse\WarehouseTransactionCreate::class)->name('warehouse.transaction.create');
     Route::get('/warehouse/export', \App\Livewire\Warehouse\WarehouseExport::class)->name('warehouse.export');
+    Route::get('/warehouse/history', \App\Livewire\Warehouse\WarehouseHistory::class)->name('warehouse.history');
     Route::get('/warehouse/report', \App\Livewire\Warehouse\WarehouseReport::class)->name('warehouse.report');
+    Route::get('/warehouse/settings', \App\Livewire\Warehouse\WarehouseSetting::class)->name('warehouse.settings');
 
     // Production
     Route::get('/production', \App\Livewire\Production\ProductionList::class)->name('production.index');
+    Route::get('/production/bom', \App\Livewire\Production\ProductionBom::class)->name('production.bom');
+    Route::get('/production/pp', \App\Livewire\Production\ProductionPp::class)->name('production.pp');
+    Route::get('/production/dms', \App\Livewire\Production\ProductionDms::class)->name('production.dms');
+    Route::get('/production/mrp', \App\Livewire\Production\ProductionMrp::class)->name('production.mrp');
+    Route::get('/production/planner', \App\Livewire\Production\ProductionPlanner::class)->name('production.planner');
+    Route::get('/production/routing', \App\Livewire\Production\ProductionRouting::class)->name('production.routing');
+    Route::get('/production/stats', \App\Livewire\Production\ProductionStats::class)->name('production.stats');
+    Route::get('/production/analytics', \App\Livewire\Production\ProductionAnalytics::class)->name('production.analytics');
+
+    // QA/QC Routes
+    Route::get('/qa-qc/bom-nvl', \App\Livewire\QaQc\QaMaterialControl::class)->name('qaqc.bom');
+    Route::get('/qa-qc/work-plan', \App\Livewire\QaQc\QaWorkPlan::class)->name('qaqc.plan');
+    Route::get('/qa-qc/reports', \App\Livewire\QaQc\QaReportList::class)->name('qaqc.reports');
 });

@@ -124,7 +124,7 @@ class WarehouseExport
                     $txn->product?->code,
                     $txn->product?->name,
                     ($txn->type === 'import' ? '+' : '-') . $txn->quantity,
-                    $txn->unit_price ? number_format($txn->unit_price, 0, ',', '.') : '',
+                    $txn->unit_price ? \App\Helpers\Helper::nfmt($txn->unit_price) : '',
                     $txn->partner_name ?? '',
                     $txn->invoice_number ?? '',
                     $txn->creator?->name ?? '',

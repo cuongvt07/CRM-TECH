@@ -15,7 +15,10 @@ use Livewire\Component;
 class WarehouseDashboard extends Component
 {
     public $search = '';
+    
+    #[\Livewire\Attributes\Url]
     public $filterWarehouse = '';
+    
     public $selectedItems = []; // For inventory bulk selection
     public $selectedTransactions = []; // For history bulk selection
     
@@ -23,6 +26,23 @@ class WarehouseDashboard extends Component
     public $historyFromDate = '';
     public $historyToDate = '';
     public $historyType = ''; // '', 'import', 'export'
+
+    public function mount()
+    {
+        // filterWarehouse will be auto-filled by #[Url] if present in request
+    }
+
+    public function exportExcel()
+    {
+        // Ở môi trường demo, chúng ta sẽ giả lập thông báo bắt đầu tải file
+        $this->dispatch('notify', ['message' => 'Đang chuẩn bị dữ liệu và xuất file Excel...', 'type' => 'info']);
+    }
+
+    public function printStock()
+    {
+        // Kích hoạt lệnh in trình duyệt cho vùng dữ liệu
+        $this->dispatch('print-window');
+    }
 
     public $showNotifications = false;
     public $feedbackNotes = [];
@@ -42,6 +62,31 @@ class WarehouseDashboard extends Component
     public function clearSelectedTransactions()
     {
         $this->selectedTransactions = [];
+    }
+
+    public function toggleSelectAll()
+    {
+        // Lấy danh sách item đang hiển thị dựa trên filter (tương tự như trong render)
+        $inventoryQuery = Product::where('status', 'active');
+        if ($this->filterWarehouse) {
+            $inventoryQuery->where('warehouse_id', $this->filterWarehouse);
+        }
+        if ($this->search) {
+            $inventoryQuery->where(function ($q) {
+                $q->where('code', 'like', '%' . $this->search . '%')
+                  ->orWhere('name', 'like', '%' . $this->search . '%');
+            });
+        }
+        
+        $currentIds = $inventoryQuery->pluck('id')->map(fn($id) => 'prod-' . $id)->toArray();
+
+        // Nếu tất cả item hiện tại đã có trong selectedItems, thì bỏ chọn hết
+        if (count(array_intersect($currentIds, $this->selectedItems)) === count($currentIds)) {
+            $this->selectedItems = array_diff($this->selectedItems, $currentIds);
+        } else {
+            // Ngược lại thì thêm những ID chưa có vào
+            $this->selectedItems = array_unique(array_merge($this->selectedItems, $currentIds));
+        }
     }
 
     // Cancel transaction

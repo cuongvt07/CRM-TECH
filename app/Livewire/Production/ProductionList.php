@@ -15,50 +15,17 @@ class ProductionList extends Component
 {
     public $activeTab = 'pending'; // pending, in_progress, qc, completed
 
-    public function setTab($tab)
-    {
-        $this->activeTab = $tab;
-    }
-
     public function updateStatus($id, $newStatus)
     {
         $po = ProductionOrder::with('order.items')->findOrFail($id);
-        
-        // Cảnh báo nếu bắt đầu sản xuất mà thiếu vật tư
-        if ($newStatus === 'in_progress') {
-            $matStatus = $po->getMaterialStatus();
-            if ($matStatus['status'] === 'insufficient') {
-                // Chúng ta vẫn cho phép làm, nhưng ghi log hoặc có thông báo đặc biệt ở bước này nếu cần
-            }
-        }
+        $oldStatus = $po->status;
+
+        if ($oldStatus === $newStatus) return;
 
         DB::beginTransaction();
         try {
-            $po->update(['status' => $newStatus]);
-
-            if ($newStatus === 'completed') {
-                $po->update(['actual_end_date' => now()]);
-                
-                // 1. Tự động Nhập kho thành phẩm
-                $inventory = Inventory::firstOrCreate(
-                    ['product_id' => $po->product_id],
-                    ['quantity' => 0]
-                );
-                $inventory->increment('quantity', $po->quantity);
-
-                // Ghi log giao dịch kho
-                InventoryTransaction::create([
-                    'product_id' => $po->product_id,
-                    'type' => 'import',
-                    'transaction_date' => now(),
-                    'quantity' => $po->quantity,
-                    'reference_type' => 'production_order',
-                    'reference_id' => $po->id,
-                    'note' => "Nhập kho từ Lệnh sản xuất #{$po->id} (Đơn hàng #{$po->order_id})",
-                    'created_by' => Auth::id() ?? 1,
-                ]);
-
-                // 2. Tự động Khấu trừ nguyên vật liệu theo Định mức (BOM)
+            // 1. Logic Khấu trừ nguyên vật liệu khi BẮT ĐẦU (in_progress)
+            if ($newStatus === 'in_progress' && $oldStatus === 'pending') {
                 $productWithBom = Product::with('boms.material')->findOrFail($po->product_id);
                 
                 foreach ($productWithBom->boms as $bom) {
@@ -79,16 +46,51 @@ class ProductionList extends Component
                         'quantity' => $requiredQty,
                         'reference_type' => 'production_order',
                         'reference_id' => $po->id,
-                        'note' => "Xuất kho nguyên liệu để sản xuất Lệnh #{$po->id} ({$productWithBom->name})",
+                        'note' => "Xuất kho nguyên liệu BẮT ĐẦU sản xuất Lệnh #{$po->id} ({$productWithBom->name})",
                         'created_by' => Auth::id() ?? 1,
                     ]);
                 }
+            }
 
-                // 3. Kiểm tra đơn hàng liên quan để cập nhật trạng thái
+            // 2. Logic Nhập kho thành phẩm khi HOÀN TẤT (completed)
+            if ($newStatus === 'completed') {
+                $po->update(['actual_end_date' => now()]);
+                
+                // Tự động tạo bản ghi QC (mặc định là Pass khi kéo thả trực tiếp sang hoàn tất)
+                \App\Models\QCReport::create([
+                    'production_order_id' => $po->id,
+                    'result' => 'pass',
+                    'pass_quantity' => $po->quantity,
+                    'fail_quantity' => 0,
+                    'created_by' => Auth::id() ?? 1,
+                ]);
+
+                // Tự động Nhập kho thành phẩm
+                $inventory = Inventory::firstOrCreate(
+                    ['product_id' => $po->product_id],
+                    ['quantity' => 0]
+                );
+                $inventory->increment('quantity', $po->quantity);
+
+                // Ghi log giao dịch kho
+                InventoryTransaction::create([
+                    'product_id' => $po->product_id,
+                    'type' => 'import',
+                    'transaction_date' => now(),
+                    'quantity' => $po->quantity,
+                    'reference_type' => 'production_order',
+                    'reference_id' => $po->id,
+                    'note' => "Nhập kho hoàn tất từ Lệnh sản xuất #{$po->id}",
+                    'created_by' => Auth::id() ?? 1,
+                ]);
+
+                // Kiểm tra đơn hàng liên quan để cập nhật trạng thái READY
                 if ($po->order) {
                     $this->checkOrderReady($po->order);
                 }
             }
+
+            $po->update(['status' => $newStatus]);
             
             DB::commit();
             $this->dispatch('notify', ['message' => 'Lệnh sản xuất đã được cập nhật!', 'type' => 'success']);
@@ -100,7 +102,6 @@ class ProductionList extends Component
 
     private function checkOrderReady($order)
     {
-        // Kiểm tra xem tất cả items trong đơn hàng đã đủ stock chưa
         $allReady = true;
         foreach ($order->items as $item) {
             $stock = $item->product->inventory ? $item->product->inventory->quantity : 0;
@@ -113,7 +114,6 @@ class ProductionList extends Component
         if ($allReady) {
             $order->update(['status' => 'READY']);
             
-            // Thông báo cho Sales/Admin
             \App\Models\AppNotification::create([
                 'user_id' => $order->created_by,
                 'type' => 'ORDER_STATUS_CHANGED',
@@ -127,13 +127,13 @@ class ProductionList extends Component
 
     public function render()
     {
-        $productionOrders = ProductionOrder::with(['product', 'order', 'assignee'])
-            ->where('status', $this->activeTab)
+        $orders = ProductionOrder::with(['product', 'order', 'assignee'])
             ->latest()
-            ->get();
+            ->get()
+            ->groupBy('status');
 
         return view('livewire.production.production-list', [
-            'productionOrders' => $productionOrders
+            'ordersByStatus' => $orders
         ])->layout('components.layouts.app');
     }
 }

@@ -25,6 +25,13 @@ class Product extends Model
         'warehouse_id',
         'location',
         'status',
+        'bom_status',
+        'bom_approved_at',
+        'bom_approved_by',
+    ];
+
+    protected $casts = [
+        'bom_approved_at' => 'datetime',
     ];
 
     /**
@@ -57,5 +64,13 @@ class Product extends Model
     public function boms(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Bom::class, 'product_id');
+    }
+
+    /**
+     * Get the user who approved the BOM.
+     */
+    public function bomApprover(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'bom_approved_by');
     }
 }

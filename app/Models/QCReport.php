@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QCReport extends Model
 {
+    protected $table = 'qc_reports';
+    public $timestamps = false; // Tắt vì migration chỉ có created_at thủ công
+
     protected $fillable = [
         'production_order_id',
         'result', // pass / fail

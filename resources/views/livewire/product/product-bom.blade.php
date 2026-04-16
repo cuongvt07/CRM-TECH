@@ -13,52 +13,69 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Add Material Section -->
+        <!-- Add Material Section (Hidden if Approved) -->
         <div class="lg:col-span-1 space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                    <i class="fa-solid fa-plus-circle text-green-500 mr-2"></i> Thêm vật tư
-                </h3>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tìm vật tư (Mã/Tên)</label>
-                        <div class="relative">
-                            <input type="text" wire:model.live.debounce.300ms="search" class="w-full pl-10 rounded-xl border-gray-200 focus:border-primary focus:ring-primary shadow-sm text-sm" placeholder="Nhập để tìm...">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        </div>
+            @if($product->bom_status === 'approved')
+                <div class="bg-emerald-600 p-6 rounded-2xl shadow-lg border border-emerald-500 text-white relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 opacity-10 text-6xl rotate-12">
+                        <i class="fa-solid fa-lock"></i>
                     </div>
-
-                    @if($search || count($availableMaterials) > 0)
-                        <div class="bg-gray-50 rounded-xl p-2 max-h-48 overflow-y-auto space-y-1 border border-gray-100">
-                            @foreach($availableMaterials as $mat)
-                                <button type="button" wire:click="$set('selectedMaterialId', {{ $mat->id }})" class="w-full text-left p-2 rounded-lg text-sm hover:bg-white hover:shadow-sm transition-all flex justify-between items-center {{ $selectedMaterialId == $mat->id ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-gray-600' }}">
-                                    <span>[{{ $mat->code }}] {{ $mat->name }}</span>
-                                    <span class="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500">{{ $mat->unit }}</span>
-                                </button>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Định mức <span class="text-red-500">*</span></label>
-                            <input type="number" step="0.01" wire:model="quantity" class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary shadow-sm text-sm">
-                            @error('quantity') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">ĐVT tiêu hao</label>
-                            <input type="text" wire:model="unit" class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary shadow-sm text-sm" placeholder="Mặc định">
-                        </div>
+                    <h3 class="text-lg font-black mb-2 flex items-center">
+                        <i class="fa-solid fa-shield-check mr-2 scale-110"></i> ĐỊNH MỨC ĐÃ DUYỆT
+                    </h3>
+                    <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest leading-relaxed">
+                        Dữ liệu kỹ thuật đã được QA phê duyệt và KHÓA. Chỉ cấp quản trị mới có thể thay đổi trạng thái này.
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-white/20 text-[9px] font-black uppercase">
+                        Ngày duyệt: {{ $product->bom_approved_at?->format('d/m/Y H:i') }}
                     </div>
-
-                    <button wire:click="addMaterial" class="w-full py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>CẬP NHẬT ĐỊNH MỨC</span>
-                    </button>
-                    @error('selectedMaterialId') <span class="text-xs text-red-500 text-center block">{{ $message }}</span> @enderror
                 </div>
-            </div>
+            @else
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fa-solid fa-plus-circle text-green-500 mr-2"></i> Thêm vật tư
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Tìm vật tư (Mã/Tên)</label>
+                            <div class="relative">
+                                <input type="text" wire:model.live.debounce.300ms="search" class="w-full pl-10 rounded-xl border-gray-200 focus:border-primary focus:ring-primary shadow-sm text-sm" placeholder="Nhập để tìm...">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        @if($search || count($availableMaterials) > 0)
+                            <div class="bg-gray-50 rounded-xl p-2 max-h-48 overflow-y-auto space-y-1 border border-gray-100">
+                                @foreach($availableMaterials as $mat)
+                                    <button type="button" wire:click="$set('selectedMaterialId', {{ $mat->id }})" class="w-full text-left p-2 rounded-lg text-sm hover:bg-white hover:shadow-sm transition-all flex justify-between items-center {{ $selectedMaterialId == $mat->id ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-gray-600' }}">
+                                        <span>[{{ $mat->code }}] {{ $mat->name }}</span>
+                                        <span class="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500">{{ $mat->unit }}</span>
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Định mức <span class="text-red-500">*</span></label>
+                                <input type="number" step="0.01" wire:model="quantity" class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary shadow-sm text-sm">
+                                @error('quantity') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">ĐVT tiêu hao</label>
+                                <input type="text" wire:model="unit" class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary shadow-sm text-sm" placeholder="Mặc định">
+                            </div>
+                        </div>
+
+                        <button wire:click="addMaterial" class="w-full py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>CẬP NHẬT ĐỊNH MỨC</span>
+                        </button>
+                        @error('selectedMaterialId') <span class="text-xs text-red-500 text-center block">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            @endif
 
             <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300">
                 <p class="text-xs text-gray-500 leading-relaxed">
@@ -101,15 +118,19 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 text-center font-black text-gray-800 text-lg">
-                                        {{ number_format($bom->quantity, 2) }}
+                                        @nfmt($bom->quantity)
                                     </td>
                                     <td class="px-4 py-4 text-center text-gray-500 font-medium">
                                         {{ $bom->unit }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <button wire:click="removeMaterial({{ $bom->id }})" wire:confirm="Xóa khỏi định mức?" class="text-gray-300 hover:text-red-500 transition-colors">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
+                                        @if($product->bom_status !== 'approved')
+                                            <button wire:click="removeMaterial({{ $bom->id }})" wire:confirm="Xóa khỏi định mức?" class="text-gray-300 hover:text-red-500 transition-colors">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        @else
+                                            <i class="fa-solid fa-lock text-gray-200" title="Đã khóa"></i>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

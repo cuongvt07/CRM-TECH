@@ -30,7 +30,7 @@
                                     @foreach($products as $product)
                                         <option value="{{ $product->id }}">
                                             {{ $product->code }} - {{ $product->name }} 
-                                            (Tồn: {{ $product->inventory?->quantity ?? 0 }} | Giá: {{ number_format($product->price, 0, ',', '.') }}đ)
+                                            (Tồn: @nfmt($product->inventory?->quantity ?? 0) | Giá: @nfmt($product->price)đ)
                                         </option>
                                     @endforeach
                                 </select>

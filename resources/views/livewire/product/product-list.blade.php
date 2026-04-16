@@ -66,7 +66,7 @@
                             <td class="px-6 py-4 text-gray-500">{{ $product->category?->name ?? '---' }}</td>
                             <td class="px-6 py-4 text-gray-600 italic text-xs">{{ $product->location ?? '---' }}</td>
                             <td class="px-6 py-4 text-center font-semibold {{ ($product->inventory?->quantity ?? 0) < $product->min_stock ? 'text-red-500' : 'text-green-600' }}">
-                                {{ number_format($product->inventory?->quantity ?? 0) }} <span class="text-[10px] text-gray-400 font-normal">{{ $product->unit }}</span>
+                                @nfmt($product->inventory?->quantity ?? 0) <span class="text-[10px] text-gray-400 font-normal">{{ $product->unit }}</span>
                             </td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
                                 @if($product->status === 'active')

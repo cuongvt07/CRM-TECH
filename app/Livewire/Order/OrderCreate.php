@@ -96,40 +96,49 @@ class OrderCreate extends Component
                 'customer_name' => $this->customer_name,
                 'customer_phone' => $this->customer_phone,
                 'note' => $this->note,
-                'status' => $insufficientStock ? 'PENDING' : 'CONFIRMED', 
+                'status' => $insufficientStock ? 'IN_PRODUCTION' : 'CONFIRMED', 
                 'total_amount' => $totalAmount,
-                'created_by' => Auth::id() ?? 1, // fallback to 1 if not logged in temp
+                'created_by' => Auth::id() ?? 1, 
                 'order_date' => now()->toDateString(),
             ]);
 
-            // Add Order Items
+            // Add Order Items & Auto Production
             foreach ($itemsData as $data) {
                 $order->items()->create($data);
 
-                // Deduct stock if sufficient
-                if (!$insufficientStock) {
-                    $inventory = Inventory::firstOrCreate(
-                        ['product_id' => $data['product_id']],
-                        ['quantity' => 0]
-                    );
+                $product = Product::with('inventory')->find($data['product_id']);
+                $stock = $product->inventory ? $product->inventory->quantity : 0;
+
+                if ($stock < $data['quantity']) {
+                    // Tự động tạo Lệnh Sản xuất cho phần còn thiếu (hoặc toàn bộ tùy business rule)
+                    // Ở đây tạo cho toàn bộ số lượng item trong đơn
+                    \App\Models\ProductionOrder::create([
+                        'order_id' => $order->id,
+                        'product_id' => $data['product_id'],
+                        'quantity' => $data['quantity'],
+                        'status' => 'pending',
+                        'note' => "Tự động tạo từ Đơn hàng #{$order->id}",
+                        'end_date' => now()->addDays(3), // Mặc định 3 ngày
+                    ]);
+                } else {
+                    // Khấu trừ kho nếu đủ hàng
+                    $inventory = $product->inventory;
                     $inventory->decrement('quantity', $data['quantity']);
                 }
             }
 
             // Notifications
             $adminUsers = User::where('role', 'admin')->get();
-            $warehouseUsers = User::where('role', 'warehouse')
-                                    ->orWhereHas('department', function($q) {
-                                        $q->where('code', 'KHO');
-                                    })->get();
+            $productionUsers = User::where('role', 'production')->get();
 
             if ($insufficientStock) {
-                // Notify only admins
-                $title = "Cảnh báo thiếu tồn kho: Đơn hàng #" . $order->id;
-                $message = "Đơn hàng từ {$order->customer_name} cần giao nhưng không đủ tồn kho trên hệ thống. Vui lòng tạo lệnh sản xuất!";
-                foreach ($adminUsers as $admin) {
+                // Thông báo cho Admin & Bộ phận sản xuất
+                $title = "Lệnh sản xuất mới (Tự động): Đơn #" . $order->id;
+                $message = "Đơn hàng từ {$order->customer_name} thiếu hàng. Hệ thống đã tự tạo lệnh sản xuất.";
+                
+                foreach ($adminUsers->concat($productionUsers) as $user) {
                     AppNotification::create([
-                        'user_id' => $admin->id,
+                        'user_id' => $user->id,
                         'type' => 'STOCK_WARNING',
                         'title' => $title,
                         'message' => $message,

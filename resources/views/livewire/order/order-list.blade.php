@@ -29,7 +29,7 @@
                                 <div class="text-xs text-gray-500">{{ $order->customer_phone ?? 'Không có SĐT' }}</div>
                             </td>
                             <td class="px-6 py-4 text-gray-500">{{ $order->order_date ? $order->order_date->format('d/m/Y') : '' }}</td>
-                            <td class="px-6 py-4 text-gray-900 font-semibold">{{ number_format($order->total_amount, 0, ',', '.') }} ₫</td>
+                            <td class="px-6 py-4 text-gray-900 font-semibold">@nfmt($order->total_amount) ₫</td>
                             <td class="px-6 py-4 text-center">
                                 @php
                                     $statusColors = [

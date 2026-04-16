@@ -26,5 +26,13 @@
             </div>
         </div>
         @livewireScripts
+        <script>
+            // Tự động bôi đen nội dung khi focus vào các ô nhập liệu số (Áp dụng toàn hệ thống)
+            document.addEventListener('focusin', function(e) {
+                if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.classList.contains('num-select'))) {
+                    e.target.select();
+                }
+            });
+        </script>
     </body>
 </html>

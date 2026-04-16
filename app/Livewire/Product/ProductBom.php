@@ -24,6 +24,11 @@ class ProductBom extends Component
 
     public function addMaterial()
     {
+        if ($this->product->bom_status === 'approved') {
+            $this->dispatch('notify', ['message' => 'Định mức này đã được QA duyệt và khóa. Không thể chỉnh sửa!', 'type' => 'error']);
+            return;
+        }
+
         $this->validate([
             'selectedMaterialId' => 'required|exists:products,id',
             'quantity' => 'required|numeric|min:0.01',
@@ -43,6 +48,11 @@ class ProductBom extends Component
 
     public function removeMaterial($bomId)
     {
+        if ($this->product->bom_status === 'approved') {
+            $this->dispatch('notify', ['message' => 'Định mức đã bị khóa bởi QA!', 'type' => 'error']);
+            return;
+        }
+
         Bom::where('id', $bomId)->where('product_id', $this->product->id)->delete();
         $this->product->load('boms.material');
     }
