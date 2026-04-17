@@ -52,8 +52,8 @@ class WarehouseTransactionCreate extends Component
                     'product_name' => ($this->warehouse_code === 'FINISHED_GOODS' ? '[' . $product->code . '] ' : '') . $product->name,
                     'unit' => $product->unit,
                     'quantity' => 1,
-                    'price' => $product->price,
-                    'amount' => $product->price,
+                    'price' => (float)$product->price,
+                    'amount' => (float)$product->price,
                     'search' => ($this->warehouse_code === 'FINISHED_GOODS' ? '[' . $product->code . '] ' : '') . $product->name,
                     'checked' => true, // Mặc định được chọn để in
                 ];
@@ -92,6 +92,9 @@ class WarehouseTransactionCreate extends Component
             'quantity' => 1,
             'price' => 0,
             'amount' => 0,
+            'manufacturer_name' => '',
+            'batch_number' => '',
+            'expiry_date' => '',
             'search' => '',
             'checked' => true,
         ];
@@ -111,7 +114,7 @@ class WarehouseTransactionCreate extends Component
 
     public function selectPartner($id)
     {
-        $partner = Customer::find($id);
+        $partner = \App\Models\Customer::find($id);
         if ($partner) {
             $this->partner_id = $partner->id;
             $this->partner_name = $partner->name;
@@ -135,16 +138,45 @@ class WarehouseTransactionCreate extends Component
             $this->items[$index]['product_id'] = $product->id;
             $this->items[$index]['product_name'] = $product->name;
             $this->items[$index]['unit'] = $product->unit;
-            $this->items[$index]['price'] = $product->price;
+            $this->items[$index]['price'] = (float)$product->price;
+            $this->items[$index]['manufacturer_name'] = $product->brand ?? '';
             $this->items[$index]['search'] = ($this->warehouse_code === 'FINISHED_GOODS' ? '[' . $product->code . '] ' : '') . $product->name;
             $this->updateAmount($index);
         }
     }
 
+    /**
+     * Livewire v3 lifecycle hook: tự động kích hoạt khi bất kỳ key nào trong $items thay đổi.
+     * $key có dạng "0.quantity", "1.price", v.v.
+     */
+    public function updatedItems($value, $key)
+    {
+        // Tách lấy index từ key (ví dụ: "0.quantity" -> index = 0)
+        $parts = explode('.', $key);
+        if (count($parts) >= 1) {
+            $index = (int)$parts[0];
+            $field = $parts[1] ?? '';
+
+            // Chỉ tính lại khi quantity hoặc price thay đổi
+            if (in_array($field, ['quantity', 'price'])) {
+                $this->updateAmount($index);
+            }
+        }
+    }
+
     public function updateAmount($index)
     {
-        $qty = (float)($this->items[$index]['quantity'] ?? 0);
-        $price = (float)($this->items[$index]['price'] ?? 0);
+        // Xử lý dấu phẩy/chấm do người dùng nhập (ví dụ: "1.000" hoặc "1,500")
+        $rawQty   = str_replace(['.', ','], ['', '.'], (string)($this->items[$index]['quantity'] ?? 0));
+        $rawPrice = str_replace(['.', ','], ['', '.'], (string)($this->items[$index]['price'] ?? 0));
+
+        $qty   = (float)$rawQty;
+        $price = (float)$rawPrice;
+        
+        // Cập nhật ngược lại vào items để đồng bộ giao diện (xóa dấu phẩy thừa khi nhập xong)
+        $this->items[$index]['quantity'] = $qty;
+        $this->items[$index]['price'] = $price;
+
         $this->items[$index]['amount'] = $qty * $price;
         $this->calculateTotal();
     }
@@ -170,13 +202,17 @@ class WarehouseTransactionCreate extends Component
             'items.*.quantity.min' => 'Số lượng phải từ 1 trở lên.',
         ]);
 
-        // Kiểm tra tồn kho nếu là xuất kho
+        // Kiểm tra tồn kho theo Lô nếu là xuất kho
         if ($this->type === 'export') {
             foreach ($this->items as $index => $item) {
-                $product = Product::with('inventory')->find($item['product_id']);
-                $currentStock = $product->inventory ? $product->inventory->quantity : 0;
-                if ($currentStock < $item['quantity']) {
-                    $this->addError("items.{$index}.quantity", "Không đủ tồn kho! Hiện tại: " . \App\Helpers\Helper::nfmt($currentStock));
+                $batchQuery = \App\Models\InventoryBatch::where('product_id', $item['product_id'])
+                    ->where('batch_number', $item['batch_number']);
+                
+                $batch = $batchQuery->first();
+                $currentBatchStock = $batch ? $batch->quantity : 0;
+
+                if ($currentBatchStock < $item['quantity']) {
+                    $this->addError("items.{$index}.quantity", "Không đủ tồn kho cho Lô {$item['batch_number']}! Hiện tại: " . \App\Helpers\Helper::nfmt($currentBatchStock));
                     return;
                 }
             }
@@ -184,6 +220,9 @@ class WarehouseTransactionCreate extends Component
 
         DB::beginTransaction();
         try {
+            $warehouse = Warehouse::where('code', $this->warehouse_code)->first();
+            $warehouseId = $warehouse?->id;
+
             foreach ($this->items as $item) {
                 // 1. Tạo bản ghi transaction
                 InventoryTransaction::create([
@@ -193,6 +232,9 @@ class WarehouseTransactionCreate extends Component
                     'transaction_date' => $this->transaction_date,
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['price'],
+                    'batch_number' => $item['batch_number'] ?: 'KHO_BANDAU',
+                    'expiry_date' => $item['expiry_date'] ?: null,
+                    'manufacturer_name' => $item['manufacturer_name'] ?: null,
                     'partner_name' => $this->partner_name,
                     'partner_phone' => $this->partner_phone,
                     'partner_address' => $this->partner_address,
@@ -201,16 +243,32 @@ class WarehouseTransactionCreate extends Component
                     'created_by' => Auth::id() ?? 1,
                 ]);
 
-                // 2. Cập nhật tồn kho
+                // 2. Cập nhật tồn kho tổng (Master Inventory)
                 $inventory = Inventory::firstOrCreate(
                     ['product_id' => $item['product_id']],
                     ['quantity' => 0]
                 );
 
+                // 3. Cập nhật tồn kho theo Lô (Batch Inventory)
+                $batch = \App\Models\InventoryBatch::firstOrCreate(
+                    [
+                        'product_id' => $item['product_id'],
+                        'batch_number' => $item['batch_number'] ?: 'KHO_BANDAU',
+                        'warehouse_id' => $warehouseId,
+                    ],
+                    [
+                        'expiry_date' => $item['expiry_date'] ?: null,
+                        'manufacturer_name' => $item['manufacturer_name'] ?: null,
+                        'quantity' => 0
+                    ]
+                );
+
                 if ($this->type === 'import') {
                     $inventory->increment('quantity', $item['quantity']);
+                    $batch->increment('quantity', $item['quantity']);
                 } else {
                     $inventory->decrement('quantity', $item['quantity']);
+                    $batch->decrement('quantity', $item['quantity']);
                 }
             }
 

@@ -84,7 +84,7 @@
                         </div>
                         <div>
                             <div class="flex items-center space-x-2 mb-1">
-                                <span class="bg-slate-800 text-white text-[9px] font-black px-1.5 py-0.5 rounded tracking-widest uppercase">{{ $selectedProduct->code }}</span>
+                                <span class="bg-slate-100 text-slate-800 text-[9px] font-black px-1.5 py-0.5 rounded tracking-widest uppercase border border-slate-200">{{ $selectedProduct->code }}</span>
                                 <h2 class="text-xl font-black text-slate-800">{{ $selectedProduct->name }}</h2>
                             </div>
                             <div class="flex items-center space-x-4 text-xs text-slate-500 font-bold">

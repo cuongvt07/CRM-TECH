@@ -10,12 +10,21 @@
     </div>
 
     {{-- Filters & Search --}}
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex items-center justify-between">
-        <div class="relative w-96">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-            </span>
-            <input wire:model.live.debounce.300ms="search" type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition duration-150 ease-in-out" placeholder="Tìm tên, mã hoặc số điện thoại...">
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4 flex-1">
+            <div class="relative w-96">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </span>
+                <input wire:model.live.debounce.300ms="search" type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition duration-150 ease-in-out" placeholder="Tìm tên, mã hoặc số điện thoại...">
+            </div>
+            
+            <select wire:model.live="filterType" class="w-40 px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition duration-150 ease-in-out text-gray-600 font-bold">
+                <option value="">Tất cả phân loại</option>
+                <option value="customer">Khách hàng</option>
+                <option value="supplier">Nhà cung cấp</option>
+                <option value="both">Khách hàng & NCC</option>
+            </select>
         </div>
         <div class="flex space-x-2">
             <button class="p-2 text-gray-400 hover:text-primary transition-colors">
@@ -34,6 +43,7 @@
                 <tr>
                     <th class="px-6 py-4">Khách hàng</th>
                     <th class="px-6 py-4">Mã KH</th>
+                    <th class="px-6 py-4 text-center">Phân loại</th>
                     <th class="px-6 py-4">Liên hệ</th>
                     <th class="px-6 py-4">Người liên hệ</th>
                     <th class="px-6 py-4">Địa chỉ</th>
@@ -60,6 +70,15 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 font-mono text-xs font-bold text-blue-600">{{ $customer->customer_code }}</td>
+                        <td class="px-6 py-4 text-center">
+                            @if($customer->type == 'customer')
+                                <span class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold border border-blue-100">K.Hàng</span>
+                            @elseif($customer->type == 'supplier')
+                                <span class="px-2.5 py-1 bg-orange-50 text-orange-600 rounded-lg text-xs font-bold border border-orange-100">NCC</span>
+                            @else
+                                <span class="px-2.5 py-1 bg-purple-50 text-purple-600 rounded-lg text-xs font-bold border border-purple-100">Cả 2</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center text-gray-700">
                                 <i class="fa-solid fa-phone text-xs mr-2 text-gray-400"></i>
@@ -124,9 +143,29 @@
                     <div class="grid grid-cols-2 gap-6">
                         {{-- Name --}}
                         <div class="col-span-2">
-                            <label class="block text-xs font-black text-gray-500 uppercase mb-2">Tên khách hàng *</label>
+                            <label class="block text-xs font-black text-gray-500 uppercase mb-2">Tên đối tác *</label>
                             <input wire:model="name" type="text" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400 font-bold text-gray-800" placeholder="Nguyễn Văn A...">
                             @error('name') <span class="text-red-500 text-[10px] mt-1 font-bold">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- Type --}}
+                        <div class="col-span-2">
+                            <label class="block text-xs font-black text-gray-500 uppercase mb-2">Phân loại đối tác *</label>
+                            <div class="flex items-center space-x-6">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" wire:model="type" value="customer" class="w-4 h-4 text-primary bg-gray-100 border-gray-300 focus:ring-primary focus:ring-2">
+                                    <span class="ml-2 text-sm font-medium text-gray-700">Khách hàng</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" wire:model="type" value="supplier" class="w-4 h-4 text-orange-500 bg-gray-100 border-gray-300 focus:ring-orange-500 focus:ring-2">
+                                    <span class="ml-2 text-sm font-medium text-gray-700">Nhà cung cấp</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" wire:model="type" value="both" class="w-4 h-4 text-purple-500 bg-gray-100 border-gray-300 focus:ring-purple-500 focus:ring-2">
+                                    <span class="ml-2 text-sm font-medium text-gray-700">Cả 2</span>
+                                </label>
+                            </div>
+                            @error('type') <span class="text-red-500 text-[10px] mt-1 font-bold">{{ $message }}</span> @enderror
                         </div>
 
                         {{-- Tax Code --}}

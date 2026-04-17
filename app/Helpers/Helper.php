@@ -16,9 +16,14 @@ class Helper
         
         $floatVal = (float)$val;
         
-        // Kiểm tra xem có phần thập phân không
-        $decimals = (floor($floatVal) == $floatVal) ? 0 : 2;
+        // Định dạng với tối đa 2 chữ số thập phân
+        $formatted = number_format($floatVal, 2, ',', '.');
         
-        return number_format($floatVal, $decimals, ',', '.');
+        // Nếu có dấu phẩy (thập phân), thực hiện rtrim số 0 và dấu phẩy thừa
+        if (strpos($formatted, ',') !== false) {
+            $formatted = rtrim(rtrim($formatted, '0'), ',');
+        }
+        
+        return $formatted;
     }
 }

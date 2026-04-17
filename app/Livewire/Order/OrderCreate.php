@@ -23,21 +23,67 @@ class OrderCreate extends Component
 
     // Cart items
     public $cart = [];
+    public $total_amount = 0;
 
     public function mount()
     {
-        $this->cart[] = ['product_id' => '', 'quantity' => 1];
+        $this->addCartItem();
     }
 
     public function addCartItem()
     {
-        $this->cart[] = ['product_id' => '', 'quantity' => 1];
+        $this->cart[] = [
+            'product_id' => '', 
+            'quantity' => 1,
+            'price' => 0,
+            'amount' => 0,
+            'unit' => '---'
+        ];
     }
 
     public function removeCartItem($index)
     {
         unset($this->cart[$index]);
         $this->cart = array_values($this->cart);
+        $this->calculateTotal();
+    }
+
+    public function updatedCart($value, $key)
+    {
+        // $key format: index.field (e.g. 0.quantity)
+        $parts = explode('.', $key);
+        if (count($parts) === 2) {
+            $index = $parts[0];
+            $field = $parts[1];
+
+            if ($field === 'product_id') {
+                $product = Product::find($value);
+                if ($product) {
+                    $this->cart[$index]['price'] = $product->price;
+                    $this->cart[$index]['unit'] = $product->unit;
+                }
+            }
+            
+            $this->calculateRow($index);
+        }
+    }
+
+    public function calculateRow($index)
+    {
+        // Xử lý dấu phẩy/chấm do người dùng nhập (ví dụ: "1.000" hoặc "1,500")
+        $rawQty   = str_replace(['.', ','], ['', '.'], (string)($this->cart[$index]['quantity'] ?? 0));
+        $rawPrice = str_replace(['.', ','], ['', '.'], (string)($this->cart[$index]['price'] ?? 0));
+
+        $qty   = (float)$rawQty;
+        $price = (float)$rawPrice;
+
+        $this->cart[$index]['amount'] = $qty * $price;
+        $this->calculateTotal();
+    }
+
+    public function calculateTotal()
+    {
+        $this->total_amount = collect($this->cart)->sum('amount');
     }
 
     public function updatedCustomerId($value)
@@ -47,10 +93,8 @@ class OrderCreate extends Component
             if ($customer) {
                 $this->customer_name = $customer->name;
                 $this->customer_phone = $customer->phone;
+                $this->customer_address = $customer->address;
             }
-        } else {
-            $this->customer_name = '';
-            $this->customer_phone = '';
         }
     }
 
@@ -74,18 +118,17 @@ class OrderCreate extends Component
             foreach ($this->cart as $item) {
                 $product = Product::with('inventory')->findOrFail($item['product_id']);
                 $stock = $product->inventory ? $product->inventory->quantity : 0;
-                $quantity = (int)$item['quantity'];
+                $quantity = (float)$item['quantity'];
 
                 if ($stock < $quantity) {
                     $insufficientStock = true;
                 }
 
-                $subtotal = $product->price * $quantity;
-                $totalAmount += $subtotal;
+                $subtotal = (float)$item['amount'];
 
                 $itemsData[] = [
                     'product_id' => $product->id,
-                    'unit_price' => $product->price,
+                    'unit_price' => (float)$item['price'],
                     'quantity' => $quantity,
                     'subtotal' => $subtotal,
                 ];
@@ -97,7 +140,7 @@ class OrderCreate extends Component
                 'customer_phone' => $this->customer_phone,
                 'note' => $this->note,
                 'status' => $insufficientStock ? 'IN_PRODUCTION' : 'CONFIRMED', 
-                'total_amount' => $totalAmount,
+                'total_amount' => $this->total_amount,
                 'created_by' => Auth::id() ?? 1, 
                 'order_date' => now()->toDateString(),
             ]);

@@ -229,7 +229,7 @@
                 <button wire:click="exportExcel" class="bg-emerald-600 text-white hover:bg-emerald-700 px-4 py-2 rounded-lg shadow-sm transition-all text-xs font-bold uppercase flex items-center">
                     <i class="fa-solid fa-file-excel mr-2"></i> Xuất Excel
                 </button>
-                <button wire:click="printStock" class="bg-gray-900 text-white hover:bg-black px-4 py-2 rounded-lg shadow-sm transition-all text-xs font-bold uppercase flex items-center">
+                <button wire:click="printStock" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg shadow-sm transition-all text-xs font-bold uppercase flex items-center">
                     <i class="fa-solid fa-print mr-2"></i> In báo cáo
                 </button>
             </div>
@@ -298,9 +298,79 @@
             <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                 <i class="fa-solid fa-boxes-stacked text-blue-500 mr-2"></i> Tồn kho hiện tại
             </h3>
-            <span class="text-xs text-gray-400">{{ $inventoryItems->count() }} mặt hàng</span>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-100/50 rounded-full group-hover:scale-125 transition-transform"></div>
+            <div class="relative z-10 flex items-center justify-between">
+                <div>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-blue-400 mb-1">Tổng mặt hàng</p>
+                    <h3 class="text-3xl font-black text-blue-700 tracking-tighter">@nfmt(count($inventoryItems))</h3>
+                </div>
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-blue-500 shadow-sm">
+                    <i class="fa-solid fa-boxes-stacked text-xl"></i>
+                </div>
+            </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+
+        <div class="bg-amber-50 border border-amber-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-100/50 rounded-full group-hover:scale-125 transition-transform"></div>
+            <div class="relative z-10 flex items-center justify-between">
+                <div>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-amber-500/70 mb-1">Giao dịch mới</p>
+                    <h3 class="text-3xl font-black text-amber-600 tracking-tighter">@nfmt(count($transactions))</h3>
+                </div>
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-amber-500 shadow-sm">
+                    <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+             <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-100/50 rounded-full group-hover:scale-125 transition-transform"></div>
+             <div class="relative z-10 flex items-center justify-between">
+                <div>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500/70 mb-1">Cảnh báo tồn</p>
+                    <h3 class="text-3xl font-black text-emerald-600 tracking-tighter">0</h3>
+                </div>
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-emerald-500 shadow-sm">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-gray-50 rounded-full group-hover:scale-125 transition-transform"></div>
+            <div class="relative z-10 flex justify-end">
+                <div class="text-right">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Ngày hiện tại</p>
+                    <h3 class="text-xl font-black text-gray-700 tracking-tighter">{{ now()->format('d/m/Y') }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- SECTION 1: TỔN KHO CHI TIẾT --}}
+    <div class="px-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+            <div class="bg-blue-50/50 px-6 py-4 flex items-center justify-between border-b border-gray-100">
+                <div class="flex items-center">
+                    <div class="w-2 h-8 bg-blue-600 rounded-full mr-4"></div>
+                    <div>
+                        <h2 class="text-lg font-black text-gray-800 uppercase tracking-tight">Danh sách Tồn kho chi tiết</h2>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Hiển thị tách dòng theo từng lô sản xuất</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2 no-print">
+                    <button wire:click="exportExcel" class="bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all flex items-center">
+                        <i class="fa-solid fa-file-excel mr-2"></i> Xuất Excel
+                    </button>
+                    <button wire:click="printReport" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 transition-all flex items-center">
+                        <i class="fa-solid fa-print mr-2"></i> In báo cáo
+                    </button>
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-gray-50 text-gray-600 font-medium border-b border-gray-100">
@@ -312,102 +382,116 @@
                                     title="Chọn tất cả để in">
                             </th>
                             @if(!in_array($this->getSelectedWarehouseCode(), ['RAW_MAT', 'SUPPLIES']))
-                                <th class="px-5 py-3">Mã SP</th>
-                                <th class="px-5 py-3">Tên Hàng hóa</th>
+                                <th class="px-5 py-3">Sản phẩm / Số lô</th>
+                                <th class="px-5 py-3">Hãng SX</th>
+                                <th class="px-5 py-3 text-center">Hạn dùng</th>
                                 <th class="px-5 py-3">Kho</th>
-                                <th class="px-5 py-3">ĐVT</th>
-                                <th class="px-5 py-3 text-center">Min</th>
-                                <th class="px-5 py-3 text-center">Max</th>
-                                <th class="px-5 py-3 text-center font-bold bg-blue-50/50">Tồn hiện tại</th>
+                                <th class="px-5 py-3 text-center">ĐVT</th>
+                                <th class="px-5 py-3 text-center font-bold bg-blue-50/50">Tồn theo lô</th>
                                 <th class="px-5 py-3 text-center">Trạng thái</th>
                             @else
-                                <th class="px-5 py-3">Thông tin NVL</th>
-                                <th class="px-5 py-3">Quy cách</th>
-                                <th class="px-5 py-3">ĐVT</th>
-                                <th class="px-5 py-3 whitespace-nowrap">Vị trí kho</th>
-                                <th class="px-5 py-3 text-center font-bold bg-blue-50/50 shadow-inner">SL Tồn</th>
-                                <th class="px-5 py-3 text-right">Giá trị hàng</th>
+                                <th class="px-5 py-3">Thông tin NVL & Số lô</th>
+                                <th class="px-5 py-3">Hãng SX</th>
+                                <th class="px-5 py-3 text-center">Hạn dùng</th>
+                                <th class="px-5 py-3">ĐVT / Vị trí</th>
+                                <th class="px-5 py-3 text-center font-bold bg-amber-50/50 shadow-inner">SL Lô</th>
+                                <th class="px-5 py-3 text-right">Giá trị lô</th>
                                 <th class="px-5 py-3 w-32">Ghi chú</th>
                             @endif
                             <th class="px-5 py-3 text-center no-print">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @forelse($inventoryItems as $prod)
+                        @forelse($inventoryItems as $item)
                         @php
-                            $qty = $prod->inventory?->quantity ?? 0;
-                            if ($prod->min_stock > 0 && $qty < $prod->min_stock) {
+                            $prod = $item->product;
+                            $qty = $item->quantity;
+                            // Tính trạng thái dựa trên tồn tổng của sản phẩm
+                            $totalQty = $prod->inventory?->quantity ?? 0;
+                            if ($prod->min_stock > 0 && $totalQty < $prod->min_stock) {
                                 $badge = 'text-red-700 bg-red-100 border-red-300 animate-pulse';
-                                $badgeText = '⚠ CẠN KHO';
-                            } elseif ($prod->max_stock > 0 && $qty > $prod->max_stock) {
-                                $badge = 'text-orange-700 bg-orange-100 border-orange-300';
-                                $badgeText = '⬆ VƯỢT MỨC';
+                                $badgeText = '⚠ THẤP';
                             } else {
                                 $badge = 'text-green-700 bg-green-50 border-green-200';
                                 $badgeText = '✓ Ổn định';
                             }
                         @endphp
-                        <tr class="hover:bg-gray-50 transition-colors {{ in_array('prod-' . $prod->id, $selectedItems) ? 'bg-blue-50/30' : '' }}">
+                        <tr class="hover:bg-gray-50 transition-colors {{ in_array('prod-' . $item->id, $selectedItems) ? 'bg-blue-50/30' : '' }}">
                             <td class="px-5 py-3 text-center">
-                                <input type="checkbox" wire:model.live="selectedItems" value="prod-{{ $prod->id }}" class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                                <input type="checkbox" wire:model.live="selectedItems" value="prod-{{ $item->id }}" class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
                             </td>
                             @if(!in_array($this->getSelectedWarehouseCode(), ['RAW_MAT', 'SUPPLIES']))
-                                <td class="px-5 py-3 font-mono text-gray-500 text-xs">{{ $prod->code }}</td>
-                                <td class="px-5 py-3 font-medium text-gray-900">{{ $prod->name }}</td>                            
                                 <td class="px-5 py-3">
-                                    <span class="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">
-                                        {{ $prod->warehouse?->name ?? '---' }}
+                                    <div class="font-medium text-gray-900">{{ $prod->name }}</div>
+                                    <div class="flex items-center mt-1">
+                                        <span class="font-mono text-gray-400 text-[10px] mr-2">[{{ $prod->code }}]</span>
+                                        <span class="bg-blue-100 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter">Lô: {{ $item->batch_number }}</span>
+                                    </div>
+                                </td>                            
+                                <td class="px-5 py-3 text-gray-600 text-xs italic">{{ $item->manufacturer_name ?? '---' }}</td>
+                                <td class="px-5 py-3 text-center">
+                                    <span class="text-xs {{ $item->expiry_date && $item->expiry_date->isPast() ? 'text-red-600 font-black' : 'text-gray-500' }}">
+                                        {{ $item->expiry_date ? $item->expiry_date->format('d/m/Y') : '---' }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-3 text-gray-500">{{ $prod->unit }}</td>
-                                <td class="px-5 py-3 text-center text-gray-400">@nfmt($prod->min_stock)</td>
-                                <td class="px-5 py-3 text-center text-gray-400">@nfmt($prod->max_stock ?: 0)</td>
-                                <td class="px-5 py-3 text-center font-bold text-lg {{ $qty < $prod->min_stock ? 'text-red-600' : 'text-blue-700' }}">
+                                <td class="px-5 py-3">
+                                    <span class="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">
+                                        {{ $item->warehouse?->name ?? '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-center text-gray-500">{{ $prod->unit }}</td>
+                                <td class="px-5 py-3 text-center font-bold text-lg text-blue-700">
                                     @nfmt($qty)
                                 </td>
                                 <td class="px-5 py-3 text-center">
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-md border {{ $badge }}">{{ $badgeText }}</span>
+                                    <span class="px-2 py-1 text-[10px] font-semibold rounded-md border {{ $badge }}">{{ $badgeText }}</span>
                                 </td>
                             @else
                                 <td class="px-5 py-3">
-                                    <div class="font-bold text-gray-900 text-sm">[{{ $prod->code }}] {{ $prod->name }}</div>
-                                    <div class="text-xs text-gray-500 mt-1"><span class="font-semibold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">Hãng SX:</span> {{ $prod->brand ?? '---' }}</div>
+                                    <div class="font-bold text-gray-900 text-sm">{{ $prod->name }}</div>
+                                    <div class="flex items-center mt-1">
+                                        <span class="font-mono text-blue-600 text-[10px] mr-2 font-black">[{{ $prod->code }}]</span>
+                                        <span class="bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter shadow-sm">Lô: {{ $item->batch_number }}</span>
+                                    </div>
                                 </td>
-                                <td class="px-5 py-3 text-gray-600 text-sm">{{ $prod->description ?? '---' }}</td>
-                                <td class="px-5 py-3 text-gray-600 font-bold text-sm bg-gray-50 border-x border-gray-100">{{ $prod->unit }}</td>
-                                <td class="px-5 py-3 text-gray-600 text-[10px] font-mono whitespace-nowrap">
-                                    <span class="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 uppercase font-black">
-                                        <i class="fa-solid fa-location-dot mr-1 text-[8px]"></i> {{ $prod->location ?: '---' }}
+                                <td class="px-5 py-3 text-gray-600 text-xs italic font-medium">{{ $item->manufacturer_name ?? '---' }}</td>
+                                <td class="px-5 py-3 text-center">
+                                    <span class="text-xs font-bold {{ $item->expiry_date && $item->expiry_date->isPast() ? 'text-red-600 animate-pulse' : 'text-gray-700' }}">
+                                        {{ $item->expiry_date ? $item->expiry_date->format('d/m/Y') : '---' }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-3 text-center font-black text-xl {{ $qty > 0 ? 'text-blue-700' : 'text-red-500 animate-pulse' }} bg-blue-50/20 shadow-inner">
+                                <td class="px-5 py-3">
+                                    <div class="font-bold text-gray-700 text-xs">{{ $prod->unit }}</div>
+                                    <div class="text-[9px] text-amber-600 font-black uppercase mt-1"><i class="fa-solid fa-location-dot mr-1"></i> {{ $prod->location ?: '---' }}</div>
+                                </td>
+                                <td class="px-5 py-3 text-center font-black text-xl text-blue-700 bg-amber-50/20 shadow-inner">
                                     @nfmt($qty)
                                 </td>
                                 <td class="px-5 py-3 text-right font-bold text-emerald-700">
                                     @nfmt($qty * ($prod->price ?? 0)) ₫
                                 </td>
-                                <td class="px-5 py-3 border-l border-gray-100 border-dashed">
-                                    {{-- Ghi chú trống để người thủ kho in ra viết tay --}}
+                                <td class="px-5 py-3 border-l border-gray-100 border-dashed text-[10px] text-gray-400">
+                                    {{ $prod->description }}
                                 </td>
                             @endif
                             <td class="px-5 py-3 text-center no-print whitespace-nowrap">
                                 <div class="flex items-center justify-center space-x-1">
-                                    <a wire:navigate href="{{ route('warehouse.transaction.create', ['type' => 'import', 'warehouse_code' => $prod->warehouse?->code ?? 'RAW_MAT', 'productId' => $prod->id]) }}" 
-                                       class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Nhập kho mặt hàng này">
-                                        <i class="fa-solid fa-plus-circle"></i> Nhập
+                                    <a wire:navigate href="{{ route('warehouse.transaction.create', ['type' => 'import', 'warehouse_code' => $item->warehouse?->code ?? 'RAW_MAT', 'productId' => $prod->id]) }}" 
+                                       class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Nhập thêm lô này">
+                                        <i class="fa-solid fa-plus-circle"></i>
                                     </a>
-                                    <a wire:navigate href="{{ route('warehouse.transaction.create', ['type' => 'export', 'warehouse_code' => $prod->warehouse?->code ?? 'RAW_MAT', 'productId' => $prod->id]) }}" 
-                                       class="p-1.5 text-orange-600 hover:bg-orange-50 rounded-md transition-colors" title="Xuất kho mặt hàng này">
-                                        <i class="fa-solid fa-minus-circle"></i> Xuất
+                                    <a wire:navigate href="{{ route('warehouse.transaction.create', ['type' => 'export', 'warehouse_code' => $item->warehouse?->code ?? 'RAW_MAT', 'productId' => $prod->id]) }}" 
+                                       class="p-1.5 text-orange-600 hover:bg-orange-50 rounded-md transition-colors" title="Xuất kho từ lô này">
+                                        <i class="fa-solid fa-minus-circle"></i>
                                     </a>
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="px-5 py-8 text-center text-gray-400">
+                            <td colspan="10" class="px-5 py-8 text-center text-gray-400">
                                 <i class="fa-solid fa-box-open text-3xl mb-2 block"></i>
-                                Không tìm thấy sản phẩm nào trong kho.
+                                Không tìm thấy lô hàng nào trong kho.
                             </td>
                         </tr>
                         @endforelse
@@ -467,13 +551,12 @@
                             <th class="px-4 py-3 w-10 text-center no-print">
                                 <i class="fa-solid fa-check-double text-gray-400"></i>
                             </th>
-                            <th class="px-4 py-3">Ngày thực hiện</th>
-                            <th class="px-4 py-3">Loại</th>
-                            <th class="px-4 py-3">Hàng hóa</th>
-                            <th class="px-4 py-3">Kho</th>
+                            <th class="px-4 py-3 text-center">Ngày/Loại</th>
+                            <th class="px-4 py-3">Bên Giao/Nhận & Hãng SX</th>
+                            <th class="px-4 py-3">Hàng hóa & Số lô</th>
+                            <th class="px-4 py-3 text-center">Hạn dùng</th>
                             <th class="px-4 py-3 text-center">SL</th>
-                            <th class="px-4 py-3">Đơn giá</th>
-                            <th class="px-4 py-3">Đối tác</th>
+                            <th class="px-4 py-3 text-right">Đơn giá</th>
                             <th class="px-4 py-3 text-center">Thao tác</th>
                         </tr>
                     </thead>
@@ -483,40 +566,37 @@
                             <td class="px-4 py-3 text-center no-print border-r border-gray-50/50">
                                 <input type="checkbox" wire:model.live="selectedTransactions" value="txn-{{ $txn->id }}" class="rounded border-gray-300 text-orange-500 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500 focus:ring-opacity-50">
                             </td>
-                            <td class="px-4 py-3">
-                                <div class="text-sm font-medium text-gray-900">{{ $txn->transaction_date ? $txn->transaction_date->format('d/m/Y') : $txn->created_at->format('d/m/Y') }}</div>
-                                <div class="text-[10px] text-gray-400">Lúc: {{ $txn->created_at->format('H:i') }}</div>
-                            </td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 text-center">
+                                <div class="text-[10px] font-bold text-gray-900">{{ $txn->transaction_date ? $txn->transaction_date->format('d/m/Y') : $txn->created_at->format('d/m/Y') }}</div>
                                 @if($txn->type === 'import')
-                                    <span class="inline-flex items-center text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-200">
-                                        <i class="fa-solid fa-arrow-down mr-1"></i> NHẬP
-                                    </span>
+                                    <span class="inline-flex items-center text-[9px] font-black text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 uppercase mt-1 italic">NHẬP +</span>
                                 @else
-                                    <span class="inline-flex items-center text-xs font-semibold text-orange-700 bg-orange-50 px-2 py-1 rounded border border-orange-200">
-                                        <i class="fa-solid fa-arrow-up mr-1"></i> XUẤT
-                                    </span>
+                                    <span class="inline-flex items-center text-[9px] font-black text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100 uppercase mt-1 italic">XUẤT -</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                <div class="font-medium text-gray-900 text-xs">{{ $txn->product?->name }}</div>
-                                @if($txn->product?->warehouse?->code === 'FINISHED_GOODS')
-                                    <div class="text-[10px] text-gray-400 font-mono">{{ $txn->product?->code }}</div>
-                                @endif
-                            </td>                            <td class="px-4 py-3">
-                                <span class="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">{{ $txn->product?->warehouse?->name ?? '---' }}</span>
+                                <div class="text-xs font-bold text-gray-800 uppercase">{{ $txn->partner_name ?? '---' }}</div>
+                                <div class="text-[10px] text-gray-400 mt-1 italic">Hãng: {{ $txn->manufacturer_name ?? '...' }}</div>
                             </td>
-                            <td class="px-4 py-3 text-center font-bold {{ $txn->type === 'import' ? 'text-blue-600' : 'text-orange-600' }}">
-                                {{ $txn->type === 'import' ? '+' : '-' }}@nfmt($txn->quantity)
-                            </td>
-                            <td class="px-4 py-3 text-gray-700">{{ $txn->unit_price ? \App\Helpers\Helper::nfmt($txn->unit_price) . ' ₫' : '---' }}</td>
-                            <td class="px-4 py-3 text-gray-800">
-                                {{ $txn->partner_name ?? '---' }}
-                                @if($txn->partner_phone) <div class="text-[10px] text-gray-400">{{ $txn->partner_phone }}</div> @endif
+                            <td class="px-4 py-3">
+                                <div class="font-bold text-gray-900 text-xs">{{ $txn->product?->name }}</div>
+                                <div class="flex items-center mt-1">
+                                    <span class="font-mono text-gray-400 text-[9px] mr-2">[{{ $txn->product?->code }}]</span>
+                                    <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-1 rounded border border-blue-100">Lô: {{ $txn->batch_number }}</span>
+                                </div>
                             </td>
                             <td class="px-4 py-3 text-center">
-                                <button wire:click="cancelTransaction({{ $txn->id }})" wire:confirm="Bạn có chắc muốn HỦY giao dịch này? Tồn kho sẽ được hoàn lại." class="text-xs px-2.5 py-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md border border-red-200 font-medium transition-colors" title="Hủy giao dịch này">
-                                    <i class="fa-solid fa-xmark mr-1"></i> Hủy
+                                <span class="text-xs font-medium {{ $txn->expiry_date && $txn->expiry_date->isPast() ? 'text-red-600 font-bold' : 'text-gray-500' }}">
+                                    {{ $txn->expiry_date ? $txn->expiry_date->format('d/m/Y') : '---' }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center font-black {{ $txn->type === 'import' ? 'text-blue-600' : 'text-orange-600' }}">
+                                @nfmt($txn->quantity)
+                            </td>
+                            <td class="px-4 py-3 text-right font-bold text-gray-700 text-xs">@nfmt($txn->unit_price) ₫</td>
+                            <td class="px-4 py-3 text-center">
+                                <button wire:click="cancelTransaction({{ $txn->id }})" wire:confirm="Bạn có chắc muốn HỦY giao dịch này? Tồn kho sẽ được hoàn lại." class="p-1 px-2 text-red-500 hover:bg-red-50 rounded transition-colors" title="Hủy">
+                                    <i class="fa-solid fa-trash-can text-sm"></i>
                                 </button>
                             </td>
                         </tr>

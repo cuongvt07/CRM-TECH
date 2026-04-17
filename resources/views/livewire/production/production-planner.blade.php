@@ -88,13 +88,13 @@
 
         <!-- MATERIAL CHECK COLUMN -->
         <div class="space-y-6">
-            <div class="bg-gray-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 text-white/5 text-8xl rotate-12">
+            <div class="bg-blue-50/50 rounded-2xl p-6 text-slate-800 shadow-sm border border-blue-100 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 text-blue-500/10 text-8xl rotate-12">
                     <i class="fa-solid fa-clipboard-check"></i>
                 </div>
                 
-                <h3 class="text-lg font-bold mb-6 flex items-center">
-                    <i class="fa-solid fa-vial mr-2 text-primary"></i> ĐỊNH MỨC VẬT TƯ (BOM)
+                <h3 class="text-lg font-black mb-6 flex items-center text-blue-700">
+                    <i class="fa-solid fa-vial mr-2"></i> ĐỊNH MỨC VẬT TƯ (BOM)
                 </h3>
 
                 @if($materialCheck)
@@ -106,25 +106,25 @@
                         <div class="space-y-4">
                             @php $isInsuf = $materialCheck['status'] === 'insufficient'; @endphp
                             
-                            <div class="flex items-center justify-between p-3 rounded-xl {{ $isInsuf ? 'bg-red-500/20 border-red-500/30 text-red-400' : 'bg-green-500/20 border-green-500/30 text-green-400' }} border">
-                                <span class="text-xs font-bold uppercase">{{ $isInsuf ? 'Thiếu hụt vật tư' : 'Sẵn sàng sản xuất' }}</span>
+                            <div class="flex items-center justify-between p-3 rounded-xl {{ $isInsuf ? 'bg-red-100 border-red-200 text-red-700' : 'bg-green-100 border-green-200 text-green-700' }} border shadow-sm">
+                                <span class="text-xs font-black uppercase">{{ $isInsuf ? 'Thiếu hụt vật tư' : 'Sẵn sàng sản xuất' }}</span>
                                 <i class="fa-solid {{ $isInsuf ? 'fa-triangle-exclamation' : 'fa-circle-check' }}"></i>
                             </div>
 
-                            <div class="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                            <div class="bg-white rounded-xl border border-blue-100 overflow-hidden shadow-sm">
                                 <table class="w-full text-xs">
-                                    <thead class="bg-white/10 text-gray-400">
+                                    <thead class="bg-blue-100/50 text-blue-800 font-black uppercase text-[10px]">
                                         <tr>
-                                            <th class="px-4 py-2 text-left">Vật tư</th>
-                                            <th class="px-4 py-2 text-right">Cần</th>
-                                            <th class="px-4 py-2 text-right text-gray-400 font-normal">Tồn</th>
+                                            <th class="px-4 py-3 text-left">Vật tư</th>
+                                            <th class="px-4 py-3 text-right">Cần</th>
+                                            <th class="px-4 py-3 text-right text-blue-400 font-bold">Tồn</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-white/5">
+                                    <tbody class="divide-y divide-blue-50">
                                         @foreach($materialCheck['missing'] as $m)
-                                            <tr class="text-red-400">
-                                                <td class="px-4 py-3">{{ $m['name'] }}</td>
-                                                <td class="px-4 py-3 text-right font-bold">@nfmt($m['required'])</td>
+                                            <tr class="text-red-600 bg-red-50/30">
+                                                <td class="px-4 py-3 font-medium">{{ $m['name'] }}</td>
+                                                <td class="px-4 py-3 text-right font-black">@nfmt($m['required'])</td>
                                                 <td class="px-4 py-3 text-right opacity-60">@nfmt($m['current'])</td>
                                             </tr>
                                         @endforeach
@@ -137,10 +137,10 @@
                                         @if($prod)
                                             @foreach($prod->boms as $bom)
                                                 @if(!in_array($bom->material->name, $missingIds))
-                                                    <tr class="text-green-400">
-                                                        <td class="px-4 py-3">{{ $bom->material->name }}</td>
-                                                        <td class="px-4 py-3 text-right font-bold">@nfmt($bom->quantity * $quantity)</td>
-                                                        <td class="px-4 py-3 text-right opacity-60">@nfmt($bom->material->inventory?->quantity ?? 0)</td>
+                                                    <tr class="text-slate-700">
+                                                        <td class="px-4 py-3 font-medium">{{ $bom->material->name }}</td>
+                                                        <td class="px-4 py-3 text-right font-black text-blue-700">@nfmt($bom->quantity * $quantity)</td>
+                                                        <td class="px-4 py-3 text-right opacity-60 font-bold">@nfmt($bom->material->inventory?->quantity ?? 0)</td>
                                                     </tr>
                                                 @endif
                                             @endforeach

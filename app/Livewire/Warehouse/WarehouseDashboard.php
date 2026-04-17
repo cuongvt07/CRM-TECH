@@ -192,19 +192,20 @@ class WarehouseDashboard extends Component
     {
         $warehouses = Warehouse::all();
 
-        // ===== Tồn kho =====
-        $inventoryQuery = Product::with(['inventory', 'warehouse'])
-            ->where('status', 'active');
+        // ===== Tồn kho chi tiết theo Lô (Batch-level Inventory) =====
+        $inventoryQuery = \App\Models\InventoryBatch::with(['product.warehouse', 'warehouse']);
 
         if ($this->filterWarehouse) {
             $inventoryQuery->where('warehouse_id', $this->filterWarehouse);
         }
+        
         if ($this->search) {
-            $inventoryQuery->where(function ($q) {
+            $inventoryQuery->whereHas('product', function ($q) {
                 $q->where('code', 'like', '%' . $this->search . '%')
                   ->orWhere('name', 'like', '%' . $this->search . '%');
-            });
+            })->orWhere('batch_number', 'like', '%' . $this->search . '%');
         }
+        
         $inventoryItems = $inventoryQuery->get();
 
         // ===== Lịch sử Nhập/Xuất =====
@@ -229,6 +230,7 @@ class WarehouseDashboard extends Component
             $txnQuery->where(function ($q) {
                 $q->where('partner_name', 'like', '%' . $this->search . '%')
                   ->orWhere('invoice_number', 'like', '%' . $this->search . '%')
+                  ->orWhere('batch_number', 'like', '%' . $this->search . '%')
                   ->orWhereHas('product', fn($p) => $p->where('name', 'like', '%' . $this->search . '%'));
             });
         }

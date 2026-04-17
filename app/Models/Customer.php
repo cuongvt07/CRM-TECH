@@ -19,6 +19,7 @@ class Customer extends Model
         'contact_person',
         'image',
         'note',
+        'type',
     ];
 
     protected static function booted()

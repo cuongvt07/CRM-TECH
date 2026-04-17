@@ -12,21 +12,36 @@ class CustomerList extends Component
     use WithPagination, WithFileUploads;
 
     public $search = '';
+    public $filterType = '';
     public $showModal = false;
     
     // Form fields
     public $name, $tax_code, $phone, $email, $address, $contact_person, $note, $image;
+    public $type = 'customer';
     public $editingCustomerId = null;
 
-    protected $queryString = ['search' => ['except' => '']];
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'filterType' => ['except' => '']
+    ];
 
     public function render()
     {
-        $customers = Customer::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('customer_code', 'like', '%' . $this->search . '%')
-            ->orWhere('phone', 'like', '%' . $this->search . '%')
-            ->latest()
-            ->paginate(10);
+        $query = Customer::query();
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('customer_code', 'like', '%' . $this->search . '%')
+                  ->orWhere('phone', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if ($this->filterType) {
+            $query->where('type', $this->filterType);
+        }
+
+        $customers = $query->latest()->paginate(10);
 
         return view('livewire.customer.customer-list', [
             'customers' => $customers
@@ -36,6 +51,7 @@ class CustomerList extends Component
     public function openCreateModal()
     {
         $this->reset(['name', 'tax_code', 'phone', 'email', 'address', 'contact_person', 'note', 'image', 'editingCustomerId']);
+        $this->type = 'customer';
         $this->showModal = true;
     }
 
@@ -52,6 +68,7 @@ class CustomerList extends Component
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'image' => 'nullable|image|max:1024', // Max 1MB
+            'type' => 'required|in:customer,supplier,both',
         ]);
 
         $data = [
@@ -62,6 +79,7 @@ class CustomerList extends Component
             'address' => $this->address,
             'contact_person' => $this->contact_person,
             'note' => $this->note,
+            'type' => $this->type,
         ];
 
         if ($this->image) {

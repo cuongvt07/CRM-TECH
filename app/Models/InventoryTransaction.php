@@ -19,11 +19,16 @@ class InventoryTransaction extends Model
         'note',
         'created_by',
         'partner_name',
+        'manufacturer_name',
         'partner_address',
         'partner_phone',
         'invoice_number',
         'unit_price',
         'salesperson_name',
+        'qa_inspection_status',
+        'qa_status',
+        'qa_note',
+        'qa_inspector_id',
     ];
 
     protected $casts = [

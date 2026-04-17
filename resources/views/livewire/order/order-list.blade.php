@@ -74,10 +74,10 @@
                                                 <span class="flex h-2 w-2 rounded-full bg-green-500 mr-1.5 shadow-[0_0_5px_rgba(34,197,94,0.6)]"></span>
                                                 <span class="text-[10px] font-bold text-green-700 uppercase leading-none">Kho: Đủ hàng</span>
                                                 @if($order->warehouse_note)
-                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-xl border border-gray-700">
-                                                        <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-green-400">Ghi chú từ Kho:</p>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-white text-gray-800 text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-xl border border-blue-200">
+                                                        <p class="font-bold border-b border-gray-100 pb-1 mb-1 text-green-600">Ghi chú từ Kho:</p>
                                                         <p class="italic">"{{ $order->warehouse_note }}"</p>
-                                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-gray-900"></div>
+                                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white"></div>
                                                     </div>
                                                 @endif
                                             </div>
@@ -86,10 +86,10 @@
                                                 <span class="flex h-2 w-2 rounded-full bg-red-500 mr-1.5 shadow-[0_0_5px_rgba(239,68,68,0.6)]"></span>
                                                 <span class="text-[10px] font-bold text-red-600 uppercase leading-none">Kho: THIẾU HÀNG</span>
                                                 @if($order->warehouse_note)
-                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-xl border border-red-900/30">
-                                                        <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-red-400">Ghi chú từ Kho:</p>
-                                                        <p class="italic text-gray-300">"{{ $order->warehouse_note }}"</p>
-                                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-gray-900"></div>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-white text-gray-800 text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-xl border border-red-200">
+                                                        <p class="font-bold border-b border-gray-100 pb-1 mb-1 text-red-500">Ghi chú từ Kho:</p>
+                                                        <p class="italic text-gray-600">"{{ $order->warehouse_note }}"</p>
+                                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white"></div>
                                                     </div>
                                                 @endif
                                             </div>

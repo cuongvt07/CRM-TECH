@@ -48,14 +48,14 @@
              <button type="button" wire:click="printVoucher" class="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center text-[10px] font-black uppercase tracking-widest mr-2">
                 <i class="fa-solid fa-print mr-2 text-blue-500"></i> In phiếu tạm
              </button>
-             <div class="bg-gray-900 text-white px-3 py-1.5 rounded-lg shadow-md flex flex-col items-end">
+             <div class="bg-blue-50/50 text-blue-900 px-3 py-1.5 rounded-lg border border-blue-100 shadow-sm flex flex-col items-end">
                 <span class="text-[8px] font-black uppercase tracking-widest opacity-50">Số phiếu</span>
                 <span class="text-sm font-black font-mono tracking-tighter">{{ $voucher_no }}</span>
              </div>
         </div>
     </div>
 
-    <div class="space-y-4 voucher-container">
+    <div class="space-y-4 voucher-container text-gray-800">
         {{-- BẢN IN: THÔNG TIN HEADER (Chỉ hiện khi in) --}}
         <div class="print-only">
             <div class="voucher-header flex justify-between items-start">
@@ -82,9 +82,9 @@
 
         {{-- PHẦN 1: THÔNG TIN CHUNG (Form view) --}}
         <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden no-print">
-            <div class="bg-gray-50/50 px-5 py-2.5 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    <i class="fa-solid fa-circle-info mr-1.5 text-blue-500"></i> Thông tin chung
+            <div class="bg-blue-50/30 px-5 py-2.5 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-blue-600">
+                    <i class="fa-solid fa-circle-info mr-1.5 "></i> Thông tin chung
                 </h3>
             </div>
             
@@ -101,7 +101,7 @@
                                     class="w-full pl-9 pr-4 py-2 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary font-bold text-gray-900 text-xs shadow-sm"
                                     placeholder="Gõ tên hoặc mã...">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-user-tie text-gray-300 text-xs"></i>
+                                    <i class="fa-solid fa-user-tie text-blue-400 text-xs"></i>
                                 </div>
                                 
                                 {{-- Quick Search Results --}}
@@ -117,7 +117,7 @@
                                     </div>
                                 @endif
                             </div>
-                            <button type="button" wire:click="togglePartnerModal" class="px-3 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-xl transition-all border border-gray-200 shadow-sm" title="Mở danh sách chọn lọc">
+                            <button type="button" wire:click="togglePartnerModal" class="px-3 bg-white hover:bg-gray-50 text-blue-600 rounded-xl transition-all border border-blue-100 shadow-sm" title="Mở danh sách chọn lọc">
                                 <i class="fa-solid fa-list-ul text-sm"></i>
                             </button>
                         </div>
@@ -125,7 +125,7 @@
 
                     <div>
                         <label class="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1 ml-1">SĐT (Auto)</label>
-                        <input type="text" wire:model="partner_phone" readonly class="w-full px-3 py-2 rounded-xl border-gray-50 bg-gray-50 text-gray-500 font-bold text-xs cursor-not-allowed" placeholder="...">
+                        <input type="text" wire:model="partner_phone" readonly class="w-full px-3 py-2 rounded-xl border-gray-50 bg-gray-50 text-gray-400 font-bold text-xs cursor-not-allowed" placeholder="...">
                     </div>
 
                     <div>
@@ -136,7 +136,7 @@
                     {{-- Dòng 2 --}}
                     <div class="md:col-span-2">
                         <label class="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1 ml-1">Địa chỉ (Auto)</label>
-                        <input type="text" wire:model="partner_address" readonly class="w-full px-3 py-2 rounded-xl border-gray-50 bg-gray-50 text-gray-500 font-bold text-xs cursor-not-allowed italic" placeholder="...">
+                        <input type="text" wire:model="partner_address" readonly class="w-full px-3 py-2 rounded-xl border-gray-50 bg-gray-50 text-gray-400 font-bold text-xs cursor-not-allowed italic" placeholder="...">
                     </div>
 
                     <div>
@@ -165,18 +165,21 @@
 
             <div class="">
                 <table class="w-full border-collapse">
-                    <thead class="bg-gray-50/50 border-b border-gray-100">
+                    <thead class="bg-amber-50/50 border-b border-amber-100">
                         <tr>
-                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center w-12 no-print">
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-12 no-print">
                                 <i class="fa-solid fa-print"></i>
                             </th>
-                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 text-left">
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-left">
                                 @if($warehouse_code === 'FINISHED_GOODS') SẢN PHẨM @elseif($warehouse_code === 'RAW_MAT') NGUYÊN VẬT LIỆU @else VẬT TƯ @endif
                             </th>
-                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center w-20">ĐVT</th>
-                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center w-28">Số lượng</th>
-                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right w-36">Đơn giá</th>
-                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right w-40">Thành tiền</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-left w-28">Hãng SX</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-28">Số lô</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-32">Hạn dùng</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-20">ĐVT</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-24">Số lượng</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-right w-32">Đơn giá</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-right w-40">Thành tiền</th>
                             <th class="px-5 py-2.5 w-12 no-print"></th>
                         </tr>
                     </thead>
@@ -230,29 +233,43 @@
                                 {{-- HIỂN THỊ KHI IN --}}
                                 <div class="print-only text-xs font-bold">{{ $item['product_name'] }}</div>
                             </td>
+                            {{-- Hãng SX --}}
+                            <td class="px-3 py-1.5">
+                                <input type="text" wire:model="items.{{ $index }}.manufacturer_name" class="w-full bg-transparent border-0 focus:ring-1 focus:ring-blue-100 py-0.5 text-left font-medium text-gray-600 text-[10px] no-print" placeholder="...">
+                                <div class="print-only text-[10px]">{{ $item['manufacturer_name'] ?? '---' }}</div>
+                            </td>
+                            {{-- Số lô --}}
+                            <td class="px-3 py-1.5">
+                                <input type="text" wire:model="items.{{ $index }}.batch_number" class="w-full bg-gray-50 rounded-md border-0 focus:ring-1 focus:ring-blue-100 py-0.5 text-center font-bold text-gray-900 text-[10px] no-print" placeholder="Lot...">
+                                <div class="print-only text-center text-[10px] font-bold">{{ $item['batch_number'] ?? '---' }}</div>
+                            </td>
+                            {{-- Hạn dùng --}}
+                            <td class="px-3 py-1.5">
+                                <input type="date" wire:model="items.{{ $index }}.expiry_date" class="w-full bg-transparent border-0 focus:ring-1 focus:ring-blue-100 py-0.5 text-center font-medium text-gray-600 text-[10px] no-print">
+                                <div class="print-only text-center text-[10px]">{{ $item['expiry_date'] ? \Carbon\Carbon::parse($item['expiry_date'])->format('d/m/Y') : '---' }}</div>
+                            </td>
                             <td class="px-5 py-1.5 text-center">
                                 <span class="text-[10px] font-black text-gray-500 uppercase tracking-tighter">{{ $item['unit'] ?? '---' }}</span>
                                 <div class="print-only text-[10px] font-bold">{{ $item['unit'] ?? '---' }}</div>
                             </td>
                             <td class="px-5 py-1.5">
                                 <input type="text" 
-                                    wire:model.blur="items.{{ $index }}.quantity" 
-                                    wire:change="updateAmount({{ $index }})" 
+                                    wire:model.blur="items.{{ $index }}.quantity"
                                     @keydown.enter.prevent="$event.target.closest('tr').querySelector('.price-input').focus()"
-                                    class="w-full bg-gray-50 rounded-lg border-0 focus:ring-1 focus:ring-blue-500 py-0.5 text-center font-black text-blue-700 text-xs no-print" 
+                                    class="w-full bg-amber-50 rounded-lg border-0 focus:ring-1 focus:ring-amber-500 py-0.5 text-center font-black text-amber-700 text-xs no-print" 
                                     placeholder="0">
                                 <div class="print-only text-center text-xs font-bold">@nfmt($item['quantity'] ?? 0)</div>
                             </td>
                             <td class="px-5 py-1.5">
                                 <input type="text" 
-                                    wire:model.blur="items.{{ $index }}.price" 
-                                    wire:change="updateAmount({{ $index }})" 
+                                    wire:model.blur="items.{{ $index }}.price"
                                     class="price-input w-full bg-transparent border-0 focus:ring-0 py-0.5 text-right font-black text-gray-900 text-xs placeholder:text-gray-300 no-print" 
                                     placeholder="0">
                                 <div class="print-only text-right text-xs font-bold">@nfmt($item['price'] ?? 0)</div>
                             </td>
                             <td class="px-5 py-1.5 text-right">
-                                <span class="text-xs font-black text-emerald-700">@nfmt($item['amount'] ?? 0)</span>
+                                <span class="text-xs font-black text-blue-700 no-print">@nfmt($item['amount'] ?? 0)</span>
+                                <div class="print-only text-right text-xs font-bold">@nfmt($item['amount'] ?? 0)</div>
                             </td>
                             <td class="px-5 py-1.5 text-right no-print">
                                 <button type="button" wire:click="removeRow({{ $index }})" class="text-gray-300 hover:text-red-500 transition-colors p-1">
@@ -266,14 +283,14 @@
             </div>
 
             {{-- FOOTER TỔNG CỘNG --}}
-            <div class="bg-gray-900 px-6 py-3 flex items-center justify-between border-t border-gray-800">
+            <div class="bg-amber-50 px-6 py-4 flex items-center justify-between border-t border-amber-100">
                 <div class="hidden md:block no-print">
-                    <p class="text-[8px] font-black uppercase tracking-widest text-gray-500">Xác nhận dữ liệu trước khi lưu phiếu</p>
+                    <p class="text-[8px] font-black uppercase tracking-widest text-amber-400">Xác nhận dữ liệu trước khi lưu phiếu</p>
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-blue-400">Tổng cộng VNĐ:</span>
-                    <span class="text-2xl font-black text-white tracking-tighter">@nfmt($total_amount)</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-blue-600">Tổng cộng VNĐ:</span>
+                    <span class="text-3xl font-black text-blue-700 tracking-tighter">@nfmt($total_amount)</span>
                 </div>
             </div>
         </div>
@@ -296,12 +313,12 @@
 
         {{-- NÚT THAO TÁC (NO PRINT) --}}
         <div class="flex items-center justify-end space-x-3 mt-4 no-print">
-            <a wire:navigate href="{{ route('warehouse.index') }}" class="px-6 py-1.5 rounded-xl border border-gray-200 bg-white text-gray-400 font-black uppercase tracking-widest text-[9px] hover:bg-gray-50 transition-all">
+            <a wire:navigate href="{{ route('warehouse.index') }}" class="px-6 py-2 rounded-xl border border-gray-200 bg-white text-gray-400 font-black uppercase tracking-widest text-[9px] hover:bg-gray-50 transition-all">
                 Hủy phiếu
             </a>
             
-            <button type="button" wire:click="save" wire:loading.attr="disabled" class="px-10 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-blue-200 transition-all flex items-center min-w-[180px] justify-center">
-                <span wire:loading.remove><i class="fa-solid fa-save mr-2"></i> LƯU CHỨNG TỪ</span>
+            <button type="button" wire:click="save" wire:loading.attr="disabled" class="px-10 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-blue-200 transition-all flex items-center min-w-[200px] justify-center">
+                <span wire:loading.remove><i class="fa-solid fa-cloud-arrow-up mr-2"></i> LƯU CHỨNG TỪ</span>
                 <span wire:loading><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ĐANG LƯU...</span>
             </button>
         </div>

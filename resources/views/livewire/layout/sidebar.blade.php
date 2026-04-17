@@ -101,19 +101,26 @@
         <!-- QA/QC Module -->
         <div x-data="{ open: {{ request()->routeIs('qaqc.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button @click="open = !open; if(!sidebarOpen) sidebarOpen = true" class="{{ request()->routeIs('qaqc.*') ? 'bg-emerald-50 text-emerald-600 font-semibold' : 'text-gray-600 hover:bg-gray-50' }} w-full flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'QA/QC' : ''">
-                <i class="fa-solid fa-shield-check text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
+                <i class="fa-solid fa-shield text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
                 <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate module-cha">QA/QC</span>
                 <i x-show="sidebarOpen" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs text-gray-400 transition-transform"></i>
             </button>
-            <div x-show="open && sidebarOpen" x-transition class="pl-[3.25rem] pr-3 py-1 space-y-1">
-                <a wire:navigate href="{{ route('qaqc.bom') }}" class="{{ request()->routeIs('qaqc.bom') ? 'text-emerald-600 font-medium' : 'text-gray-500 hover:text-emerald-600' }} block py-2 text-sm transition-colors">
-                    Duyệt BOM/NVL
+            <div x-show="open && sidebarOpen" x-transition class="pl-[3.25rem] pr-3 py-1 space-y-1 bg-emerald-50/30 rounded-b-lg">
+                <a wire:navigate href="{{ route('qaqc.bom') }}" class="{{ request()->routeIs('qaqc.bom') ? 'text-emerald-700 font-bold bg-emerald-100/50' : 'text-slate-700 hover:text-emerald-600' }} flex flex-row items-center py-2.5 px-3 rounded-md text-sm transition-colors">
+                    <i class="fa-solid fa-clipboard-check text-slate-500 text-sm mr-3 shrink-0"></i>
+                    <span class="truncate">Duyệt BOM NVL</span>
                 </a>
-                <a wire:navigate href="{{ route('qaqc.plan') }}" class="{{ request()->routeIs('qaqc.plan') ? 'text-emerald-600 font-medium' : 'text-gray-500 hover:text-emerald-600' }} block py-2 text-sm transition-colors">
-                    Check-list SX
+                <a wire:navigate href="{{ route('qaqc.plan') }}" class="{{ request()->routeIs('qaqc.plan') ? 'text-emerald-700 font-bold bg-emerald-100/50' : 'text-slate-700 hover:text-emerald-600' }} flex flex-row items-center py-2.5 px-3 rounded-md text-sm transition-colors">
+                    <i class="fa-solid fa-list-check text-slate-500 text-sm mr-3 shrink-0"></i>
+                    <span class="truncate">Check list kiểm tra</span>
                 </a>
-                <a wire:navigate href="{{ route('qaqc.reports') }}" class="{{ request()->routeIs('qaqc.reports') ? 'text-emerald-600 font-medium' : 'text-gray-500 hover:text-emerald-600' }} block py-2 text-sm transition-colors">
-                    Báo cáo QA/QC
+                <a wire:navigate href="{{ route('qaqc.reports') }}" class="{{ request()->routeIs('qaqc.reports') ? 'text-emerald-700 font-bold bg-emerald-100/50' : 'text-slate-700 hover:text-emerald-600' }} flex flex-row items-center py-2.5 px-3 rounded-md text-sm transition-colors">
+                    <i class="fa-solid fa-chart-column text-slate-500 text-sm mr-3 shrink-0"></i>
+                    <span class="truncate">Tổng hợp báo cáo</span>
+                </a>
+                <a wire:navigate href="{{ route('qaqc.materials') }}" class="{{ request()->routeIs('qaqc.materials') ? 'text-emerald-700 font-bold bg-emerald-100/50' : 'text-slate-700 hover:text-emerald-600' }} flex flex-row items-center py-2.5 px-3 rounded-md text-sm transition-colors">
+                    <i class="fa-solid fa-boxes-stacked text-slate-500 text-sm mr-3 shrink-0"></i>
+                    <span class="truncate">Danh mục nguyên vật liệu</span>
                 </a>
             </div>
         </div>

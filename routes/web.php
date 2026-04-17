@@ -81,4 +81,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/qa-qc/bom-nvl', \App\Livewire\QaQc\QaMaterialControl::class)->name('qaqc.bom');
     Route::get('/qa-qc/work-plan', \App\Livewire\QaQc\QaWorkPlan::class)->name('qaqc.plan');
     Route::get('/qa-qc/reports', \App\Livewire\QaQc\QaReportList::class)->name('qaqc.reports');
+    Route::get('/qa-qc/materials', \App\Livewire\QaQc\QaMaterialList::class)->name('qaqc.materials');
 });

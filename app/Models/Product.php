@@ -59,6 +59,14 @@ class Product extends Model
     }
 
     /**
+     * Get the batches for the product.
+     */
+    public function batches(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(InventoryBatch::class);
+    }
+
+    /**
      * Get the bill of materials for the product.
      */
     public function boms(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -72,5 +80,15 @@ class Product extends Model
     public function bomApprover(): BelongsTo
     {
         return $this->belongsTo(User::class, 'bom_approved_by');
+    }
+
+    /**
+     * Get the latest raw material import transaction for QA.
+     */
+    public function latestImportTransaction(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(InventoryTransaction::class, 'product_id')
+            ->where('type', 'import')
+            ->latest('id');
     }
 }
