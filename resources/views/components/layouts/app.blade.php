@@ -11,7 +11,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="bg-[#F5F5F5] text-gray-800">
+    <body class="antialiased">
         <div class="flex h-screen overflow-hidden">
             <!-- Sidebar -->
             <livewire:layout.sidebar />

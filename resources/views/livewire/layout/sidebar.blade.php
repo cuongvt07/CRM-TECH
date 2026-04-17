@@ -14,16 +14,16 @@
     <nav class="flex-1 p-4 space-y-2 overflow-y-auto overflow-x-hidden">
         <a wire:navigate href="/" class="flex items-center p-3 rounded-lg bg-blue-50 text-primary font-semibold transition-colors group">
             <i class="fa-solid fa-gauge text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-            <span class="ml-3 truncate">Bảng điều khiển</span>
+            <span class="ml-3 truncate module-cha">Bảng điều khiển</span>
         </a>
         <a wire:navigate href="{{ route('notifications.index') }}" class="{{ request()->routeIs('notifications.index') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50' }} flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'Thông báo' : ''">
             <i class="fa-solid fa-bell text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-            <span x-show="sidebarOpen" class="ml-3 truncate">Thông báo</span>
+            <span x-show="sidebarOpen" class="ml-3 truncate module-cha">Thông báo</span>
         </a>
         <div x-data="{ open: {{ request()->routeIs('products.*') || request()->routeIs('categories.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button @click="open = !open; if(!sidebarOpen) sidebarOpen = true" class="{{ request()->routeIs('products.*') || request()->routeIs('categories.*') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50' }} w-full flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'Sản phẩm' : ''">
                 <i class="fa-solid fa-box-open text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate">Sản phẩm</span>
+                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate module-cha">Sản phẩm</span>
                 <i x-show="sidebarOpen" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs text-gray-400 transition-transform"></i>
             </button>
             <div x-show="open && sidebarOpen" x-transition class="pl-[3.25rem] pr-3 py-1 space-y-1">
@@ -41,7 +41,7 @@
         <div x-data="{ open: {{ request()->routeIs('orders.*') || request()->routeIs('customers.*') || request()->routeIs('sales.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button @click="open = !open; if(!sidebarOpen) sidebarOpen = true" class="{{ request()->routeIs('orders.*') || request()->routeIs('customers.*') || request()->routeIs('sales.*') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50' }} w-full flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'Bán hàng' : ''">
                 <i class="fa-solid fa-cart-shopping text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate">BÁN HÀNG</span>
+                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate module-cha">BÁN HÀNG</span>
                 <i x-show="sidebarOpen" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs text-gray-400 transition-transform"></i>
             </button>
             <div x-show="open && sidebarOpen" x-transition class="pl-[3.25rem] pr-3 py-1 space-y-1">
@@ -59,7 +59,7 @@
         <div x-data="{ open: {{ request()->routeIs('production.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button @click="open = !open; if(!sidebarOpen) sidebarOpen = true" class="{{ request()->routeIs('production.*') ? 'bg-amber-50 text-amber-700 font-semibold' : 'text-gray-600 hover:bg-gray-50' }} w-full flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'Quản trị sản xuất' : ''">
                 <i class="fa-solid fa-industry text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate uppercase font-bold text-sm tracking-widest">Quản trị sản xuất</span>
+                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate module-cha">Quản trị sản xuất</span>
                 <i x-show="sidebarOpen" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs text-gray-400 transition-transform"></i>
             </button>
             <div x-show="open && sidebarOpen" x-transition class="pl-[3.25rem] pr-3 py-1 space-y-1 bg-blue-50/30 rounded-b-lg">
@@ -102,7 +102,7 @@
         <div x-data="{ open: {{ request()->routeIs('qaqc.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button @click="open = !open; if(!sidebarOpen) sidebarOpen = true" class="{{ request()->routeIs('qaqc.*') ? 'bg-emerald-50 text-emerald-600 font-semibold' : 'text-gray-600 hover:bg-gray-50' }} w-full flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'QA/QC' : ''">
                 <i class="fa-solid fa-shield-check text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate uppercase font-bold text-sm tracking-widest text-emerald-700">QA/QC</span>
+                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate module-cha">QA/QC</span>
                 <i x-show="sidebarOpen" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs text-gray-400 transition-transform"></i>
             </button>
             <div x-show="open && sidebarOpen" x-transition class="pl-[3.25rem] pr-3 py-1 space-y-1">
@@ -122,7 +122,7 @@
         <div x-data="{ open: {{ request()->routeIs('warehouse.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button @click="open = !open; if(!sidebarOpen) sidebarOpen = true" class="{{ request()->routeIs('warehouse.*') ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-600 hover:bg-gray-50' }} w-full flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'Kho' : ''">
                 <i class="fa-solid fa-warehouse-full text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate uppercase font-bold text-sm tracking-widest text-orange-700">MODULE KHO</span>
+                <span x-show="sidebarOpen" class="ml-3 flex-1 text-left truncate module-cha">MODULE KHO</span>
                 <i x-show="sidebarOpen" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs text-gray-400 transition-transform"></i>
             </button>
             <div x-show="open && sidebarOpen" x-transition class="pl-8 pr-3 py-1 space-y-3">
@@ -168,11 +168,11 @@
         </div>
         <a wire:navigate href="{{ route('employees.index') }}" class="{{ request()->is('employees*') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50' }} flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'Nhân sự' : ''">
             <i class="fa-solid fa-users text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-            <span x-show="sidebarOpen" class="ml-3 truncate">Nhân sự</span>
+            <span x-show="sidebarOpen" class="ml-3 truncate module-cha">Nhân sự</span>
         </a>
         <a wire:navigate href="{{ route('departments.index') }}" class="{{ request()->routeIs('departments.*') && !request()->routeIs('departments.my') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50' }} flex items-center p-3 rounded-lg transition-colors group" :title="!sidebarOpen ? 'Phòng ban' : ''">
             <i class="fa-solid fa-sitemap text-xl w-6 h-6 flex items-center justify-center shrink-0"></i>
-            <span x-show="sidebarOpen" class="ml-3 truncate">Phòng ban</span>
+            <span x-show="sidebarOpen" class="ml-3 truncate module-cha">Phòng ban</span>
         </a>
     </nav>
 </aside>

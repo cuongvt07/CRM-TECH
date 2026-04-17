@@ -2,6 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    @apply bg-[#F5F5F5] text-gray-800;
+@layer base {
+    html, body {
+        font-family: 'Times New Roman', Times, serif !important;
+        font-size: 11px; /* Kích cỡ nội dung */
+        @apply bg-[#F9FAFB] text-gray-700; /* Nền sáng nhạt, chữ xám nhạt dễ nhìn, không dùng nền đen */
+    }
+
+    h1, .module-cha, .text-xl, .text-2xl {
+        font-size: 15px !important;
+        font-weight: bold;
+        text-transform: uppercase !important;
+    }
+
+    h2, .module-con, .text-lg {
+        font-size: 13px !important;
+        font-weight: bold;
+    }
+
+    h3, .module-nho, .text-md {
+        font-size: 12px !important;
+        font-weight: 600;
+    }
+
+    p, span, div, a, li, button {
+        font-size: 11px;
+    }
+
+    /* Thiết lập FORM chuẩn vừa màn hình không mất chữ */
+    form, .form-container {
+        @apply w-full max-w-full;
+        overflow-x: hidden;
+    }
+    
+    input, select, textarea {
+        @apply w-full max-w-full;
+        font-size: 11px !important;
+    }
+
+    /* Đảm bảo bảng không bị tràn ra ngoài */
+    .table-responsive, .table-container {
+        @apply w-full max-w-full overflow-x-auto;
+    }
+
+    table {
+        @apply w-full max-w-full table-auto;
+    }
+
+    th, td {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        font-size: 11px !important;
+    }
 }

@@ -182,7 +182,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         @foreach($items as $index => $item)
-                        <tr class="hover:bg-gray-50/20 transition-colors">
+                        <tr class="hover:bg-gray-50/20 transition-colors" wire:key="row-{{ $index }}">
                             <td class="px-5 py-1.5 text-center no-print">
                                 <input type="checkbox" wire:model.live="items.{{ $index }}.checked" class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-0">
                             </td>
@@ -235,19 +235,19 @@
                                 <div class="print-only text-[10px] font-bold">{{ $item['unit'] ?? '---' }}</div>
                             </td>
                             <td class="px-5 py-1.5">
-                                <input type="number" 
-                                    wire:model.live.debounce.300ms="items.{{ $index }}.quantity" 
+                                <input type="text" 
+                                    wire:model.blur="items.{{ $index }}.quantity" 
                                     wire:change="updateAmount({{ $index }})" 
+                                    @keydown.enter.prevent="$event.target.closest('tr').querySelector('.price-input').focus()"
                                     class="w-full bg-gray-50 rounded-lg border-0 focus:ring-1 focus:ring-blue-500 py-0.5 text-center font-black text-blue-700 text-xs no-print" 
-                                    min="1"
-                                    step="1">
+                                    placeholder="0">
                                 <div class="print-only text-center text-xs font-bold">@nfmt($item['quantity'] ?? 0)</div>
                             </td>
                             <td class="px-5 py-1.5">
-                                <input type="number" 
-                                    wire:model.live.debounce.300ms="items.{{ $index }}.price" 
+                                <input type="text" 
+                                    wire:model.blur="items.{{ $index }}.price" 
                                     wire:change="updateAmount({{ $index }})" 
-                                    class="w-full bg-transparent border-0 focus:ring-0 py-0.5 text-right font-black text-gray-900 text-xs placeholder:text-gray-300 no-print" 
+                                    class="price-input w-full bg-transparent border-0 focus:ring-0 py-0.5 text-right font-black text-gray-900 text-xs placeholder:text-gray-300 no-print" 
                                     placeholder="0">
                                 <div class="print-only text-right text-xs font-bold">@nfmt($item['price'] ?? 0)</div>
                             </td>

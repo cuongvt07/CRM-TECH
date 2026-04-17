@@ -8,6 +8,16 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Times New Roman"', 'Times', 'serif'],
+        serif: ['"Times New Roman"', 'Times', 'serif'],
+      },
+      fontSize: {
+        'content': '11px',
+        'module-sm': '12px',
+        'module-md': '13px',
+        'module-lg': '15px',
+      },
       colors: {
         primary: '#1677FF',
         success: '#52C41A',
