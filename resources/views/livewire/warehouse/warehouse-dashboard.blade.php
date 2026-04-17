@@ -213,32 +213,91 @@
             </div>
         </div>
     @else
-        {{-- CLEAN HEADER FOR RAW MAT / FINISHED GOODS --}}
-        <div class="flex items-center mb-6 no-print">
-            <a wire:navigate href="{{ route('warehouse.index') }}" class="text-gray-500 hover:text-gray-700 mr-4 transition-all hover:scale-110">
-                <i class="fa-solid fa-arrow-left text-xl"></i>
+        {{-- ===== TOOLBAR NGANG: Tieu de + Stats + Search + Actions ===== --}}
+        <div class="flex flex-wrap items-center gap-2 mb-4 no-print">
+            <a wire:navigate href="{{ route('warehouse.index') }}" class="text-gray-400 hover:text-gray-700 transition-all shrink-0">
+                <i class="fa-solid fa-arrow-left text-base"></i>
             </a>
-            <div class="flex flex-col">
-                <h2 class="text-2xl font-black text-gray-900 tracking-tight flex items-center">
-                    <i class="fa-solid fa-conveyor-belt text-blue-600 mr-2.5 shadow-sm"></i> 
-                    Tồn Kho - {{ $this->getSelectedWarehouseCode() === 'FINISHED_GOODS' ? 'Kho Thành Phẩm' : ($this->getSelectedWarehouseCode() === 'RAW_MAT' ? 'Kho Nguyên Vật Liệu' : 'Kho Vật Tư') }}
-                </h2>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Báo cáo kiểm kê dữ liệu tồn kho hiện tại</p>
+            <h2 class="text-base font-black text-gray-900 flex items-center shrink-0">
+                <i class="fa-solid fa-conveyor-belt text-blue-600 mr-2"></i>
+                {{ $this->getSelectedWarehouseCode() === 'FINISHED_GOODS' ? 'Kho Thành Phẩm' : ($this->getSelectedWarehouseCode() === 'RAW_MAT' ? 'Kho Nguyên Vật Liệu' : 'Kho Vật Tư') }}
+            </h2>
+            <div class="h-6 w-px bg-gray-200 shrink-0"></div>
+
+            {{-- Stat: Ton kho --}}
+            <div class="flex items-center gap-1.5 bg-white border border-gray-200 rounded-xl px-3 py-1.5 shrink-0 shadow-sm">
+                <i class="fa-solid fa-cubes-stacked text-blue-500 text-xs"></i>
+                <div>
+                    <p class="text-[8px] font-black uppercase text-gray-400 leading-none">Tồn kho</p>
+                    <p class="text-sm font-black text-blue-700 leading-none">@nfmt(count($inventoryItems))</p>
+                </div>
             </div>
-            <div class="ml-auto flex items-center space-x-3">
-                <button wire:click="exportExcel" class="bg-emerald-600 text-white hover:bg-emerald-700 px-4 py-2 rounded-lg shadow-sm transition-all text-xs font-bold uppercase flex items-center">
-                    <i class="fa-solid fa-file-excel mr-2"></i> Xuất Excel
-                </button>
-                <button wire:click="printStock" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg shadow-sm transition-all text-xs font-bold uppercase flex items-center">
-                    <i class="fa-solid fa-print mr-2"></i> In báo cáo
-                </button>
+
+            {{-- Stat: Tong mat hang --}}
+            <div class="flex items-center gap-1.5 bg-blue-600 border border-blue-700 rounded-xl px-3 py-1.5 shrink-0 shadow-sm shadow-blue-200">
+                <i class="fa-solid fa-boxes-stacked text-white text-xs"></i>
+                <div>
+                    <p class="text-[8px] font-black uppercase text-blue-200 leading-none">Tổng MH</p>
+                    <p class="text-sm font-black text-white leading-none">@nfmt(count($inventoryItems))</p>
+                </div>
             </div>
+
+            {{-- Stat: Giao dich moi --}}
+            <div class="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-3 py-1.5 shrink-0 shadow-sm">
+                <i class="fa-solid fa-clock-rotate-left text-amber-500 text-xs"></i>
+                <div>
+                    <p class="text-[8px] font-black uppercase text-amber-400 leading-none">Giao dịch</p>
+                    <p class="text-sm font-black text-amber-700 leading-none">@nfmt(count($transactions))</p>
+                </div>
+            </div>
+
+            {{-- Stat: Canh bao ton --}}
+            @php
+                $lowStockCount = collect($inventoryItems)->filter(fn($i) =>
+                    $i->product?->min_stock > 0 && ($i->product?->inventory?->quantity ?? 0) < $i->product->min_stock
+                )->count();
+            @endphp
+            <div class="flex items-center gap-1.5 {{ $lowStockCount > 0 ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200' }} border rounded-xl px-3 py-1.5 shrink-0 shadow-sm">
+                <i class="fa-solid fa-triangle-exclamation {{ $lowStockCount > 0 ? 'text-red-500 animate-pulse' : 'text-emerald-500' }} text-xs"></i>
+                <div>
+                    <p class="text-[8px] font-black uppercase {{ $lowStockCount > 0 ? 'text-red-400' : 'text-emerald-400' }} leading-none">Cảnh báo</p>
+                    <p class="text-sm font-black {{ $lowStockCount > 0 ? 'text-red-700' : 'text-emerald-700' }} leading-none">{{ $lowStockCount }}</p>
+                </div>
+            </div>
+
+            {{-- Stat: Ngay hien tai --}}
+            <div class="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 shrink-0 shadow-sm">
+                <i class="fa-solid fa-calendar-day text-gray-400 text-xs"></i>
+                <div>
+                    <p class="text-[8px] font-black uppercase text-gray-400 leading-none">Ngày</p>
+                    <p class="text-xs font-black text-gray-700 leading-none">{{ now()->format('d/m/Y') }}</p>
+                </div>
+            </div>
+
+            <div class="h-6 w-px bg-gray-200 shrink-0"></div>
+
+            {{-- Search --}}
+            <div class="relative flex-1 min-w-[180px]">
+                <input type="text" wire:model.live.debounce.300ms="search"
+                    placeholder="Tên hàng, mã, số lô..."
+                    class="w-full pl-8 pr-3 py-1.5 rounded-xl border-gray-200 bg-white focus:ring-blue-500 focus:border-blue-500 text-xs shadow-sm placeholder:italic">
+                <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs"></i>
+                </div>
+            </div>
+
+            <button wire:click="exportExcel" class="bg-emerald-600 text-white hover:bg-emerald-700 px-3 py-1.5 rounded-xl text-xs font-bold uppercase flex items-center shrink-0 shadow-sm">
+                <i class="fa-solid fa-file-excel mr-1.5"></i> Excel
+            </button>
+            <button wire:click="printStock" class="bg-gray-800 text-white hover:bg-gray-900 px-3 py-1.5 rounded-xl text-xs font-bold uppercase flex items-center shrink-0 shadow-sm">
+                <i class="fa-solid fa-print mr-1.5"></i> In
+            </button>
         </div>
     @endif
 
-    {{-- FILTER BAR --}}
-    <div class="grid grid-cols-1 {{ in_array($this->getSelectedWarehouseCode(), ['RAW_MAT', 'SUPPLIES', 'FINISHED_GOODS']) ? 'md:grid-cols-2' : 'md:grid-cols-4' }} gap-4 mb-6 no-print">
-        {{-- Search Bar --}}
+    {{-- FILTER BAR (chi hien cho kho tong hop) --}}
+    <div class="{{ in_array($this->getSelectedWarehouseCode(), ['RAW_MAT', 'SUPPLIES', 'FINISHED_GOODS']) ? 'hidden' : 'grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 no-print' }}">
+        {{-- Search Bar (kho tổng hợp) --}}
         <div class="relative group">
             <input type="text" wire:model.live.debounce.300ms="search" placeholder="{{ in_array($this->getSelectedWarehouseCode(), ['RAW_MAT', 'SUPPLIES', 'FINISHED_GOODS']) ? 'Gõ tên hoặc mã sản phẩm để lọc nhanh...' : 'Số chứng từ, tên khách, ghi chú...' }}" class="w-full pl-10 pr-4 py-2 rounded-xl border-gray-200 bg-white focus:ring-red-500 focus:border-red-500 text-xs shadow-sm group-hover:shadow-md transition-all placeholder:italic">
             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -283,90 +342,36 @@
                 <i class="fa-solid fa-chart-line text-gray-400 opacity-30"></i>
             </div>
         @else
-            {{-- TOTAL ITEMS SUMMARY FOR RAW MAT --}}
-            <div class="flex items-center justify-end">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mr-3">Tổng số mặt hàng:</span>
-                <span class="text-xl font-black text-blue-700 bg-blue-50 px-4 py-1.5 rounded-xl border border-blue-100">@nfmt($inventoryItems->count())</span>
-            </div>
+            {{-- placeholder removed --}}
         @endif
     </div>
 </div>
 
-    {{-- SECTION 1: TỒN KHO --}}
-    <div class="mb-8">
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                <i class="fa-solid fa-boxes-stacked text-blue-500 mr-2"></i> Tồn kho hiện tại
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-100/50 rounded-full group-hover:scale-125 transition-transform"></div>
-            <div class="relative z-10 flex items-center justify-between">
-                <div>
-                    <p class="text-[9px] font-black uppercase tracking-widest text-blue-400 mb-1">Tổng mặt hàng</p>
-                    <h3 class="text-3xl font-black text-blue-700 tracking-tighter">@nfmt(count($inventoryItems))</h3>
-                </div>
-                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-blue-500 shadow-sm">
-                    <i class="fa-solid fa-boxes-stacked text-xl"></i>
-                </div>
-            </div>
-        </div>
 
-        <div class="bg-amber-50 border border-amber-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-100/50 rounded-full group-hover:scale-125 transition-transform"></div>
-            <div class="relative z-10 flex items-center justify-between">
-                <div>
-                    <p class="text-[9px] font-black uppercase tracking-widest text-amber-500/70 mb-1">Giao dịch mới</p>
-                    <h3 class="text-3xl font-black text-amber-600 tracking-tighter">@nfmt(count($transactions))</h3>
-                </div>
-                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-amber-500 shadow-sm">
-                    <i class="fa-solid fa-clock-rotate-left text-xl"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-             <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-100/50 rounded-full group-hover:scale-125 transition-transform"></div>
-             <div class="relative z-10 flex items-center justify-between">
-                <div>
-                    <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500/70 mb-1">Cảnh báo tồn</p>
-                    <h3 class="text-3xl font-black text-emerald-600 tracking-tighter">0</h3>
-                </div>
-                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-emerald-500 shadow-sm">
-                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-gray-50 rounded-full group-hover:scale-125 transition-transform"></div>
-            <div class="relative z-10 flex justify-end">
-                <div class="text-right">
-                    <p class="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Ngày hiện tại</p>
-                    <h3 class="text-xl font-black text-gray-700 tracking-tighter">{{ now()->format('d/m/Y') }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- SECTION 1: TỔN KHO CHI TIẾT --}}
+    {{-- SECTION: TON KHO CHI TIET --}}
     <div class="px-6 mb-8">
         <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-            <div class="bg-blue-50/50 px-6 py-4 flex items-center justify-between border-b border-gray-100">
-                <div class="flex items-center">
-                    <div class="w-2 h-8 bg-blue-600 rounded-full mr-4"></div>
+            <div class="bg-gradient-to-r from-blue-700 to-blue-500 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-table-list text-white text-base"></i>
+                    </div>
                     <div>
-                        <h2 class="text-lg font-black text-gray-800 uppercase tracking-tight">Danh sách Tồn kho chi tiết</h2>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Hiển thị tách dòng theo từng lô sản xuất</p>
+                        <h2 class="text-base font-black text-white uppercase tracking-tight leading-none">Danh sách Tồn kho chi tiết</h2>
+                        <p class="text-[10px] text-blue-200 font-bold uppercase tracking-widest mt-0.5">Tách dòng theo từng lô · Cập nhật realtime</p>
                     </div>
                 </div>
-                
                 <div class="flex items-center space-x-2 no-print">
-                    <button wire:click="exportExcel" class="bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all flex items-center">
-                        <i class="fa-solid fa-file-excel mr-2"></i> Xuất Excel
+                    @if(count($selectedItems) > 0)
+                        <span class="text-xs text-white/80 font-bold">Đã chọn {{ count($selectedItems) }}</span>
+                        <button wire:click="clearSelected" class="text-xs text-white/60 hover:text-white underline">Bỏ chọn</button>
+                    @endif
+                    <button wire:click="exportExcel" class="bg-white/10 border border-white/30 text-white hover:bg-white/20 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all flex items-center">
+                        <i class="fa-solid fa-file-excel mr-2 text-emerald-300"></i> Xuất Excel
                     </button>
-                    <button wire:click="printReport" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 transition-all flex items-center">
-                        <i class="fa-solid fa-print mr-2"></i> In báo cáo
+                    <button wire:click="printStock" class="bg-white text-blue-700 hover:bg-blue-50 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg transition-all flex items-center">
+                        <i class="fa-solid fa-print mr-2"></i>
+                        @if(count($selectedItems) > 0) In đã chọn @else In báo cáo @endif
                     </button>
                 </div>
             </div>
