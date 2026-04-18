@@ -10,7 +10,10 @@ class InventoryTransaction extends Model
     const UPDATED_AT = null;
 
     protected $fillable = [
+        'voucher_no',
         'product_id',
+        'batch_number',
+        'location',
         'type',      // import/export/adjust/reserve/release
         'transaction_date',
         'quantity',

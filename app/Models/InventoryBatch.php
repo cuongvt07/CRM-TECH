@@ -11,6 +11,7 @@ class InventoryBatch extends Model
         'product_id',
         'warehouse_id',
         'batch_number',
+        'location',
         'expiry_date',
         'manufacturer_name',
         'quantity',

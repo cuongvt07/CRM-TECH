@@ -175,6 +175,7 @@
                             </th>
                             <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-left w-28">Hãng SX</th>
                             <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-28">Số lô</th>
+                            <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-28">Vị trí</th>
                             <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-32">Hạn dùng</th>
                             <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-20">ĐVT</th>
                             <th class="px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-amber-600/70 text-center w-24">Số lượng</th>
@@ -243,10 +244,17 @@
                                 <input type="text" wire:model="items.{{ $index }}.batch_number" class="w-full bg-gray-50 rounded-md border-0 focus:ring-1 focus:ring-blue-100 py-0.5 text-center font-bold text-gray-900 text-[10px] no-print" placeholder="Lot...">
                                 <div class="print-only text-center text-[10px] font-bold">{{ $item['batch_number'] ?? '---' }}</div>
                             </td>
+                            {{-- Vị trí --}}
+                            <td class="px-3 py-1.5">
+                                <input type="text" wire:model="items.{{ $index }}.location" 
+                                    placeholder="{{ $item['location_placeholder'] ?: '' }}"
+                                    class="w-full bg-transparent border-0 focus:ring-1 focus:ring-blue-100 py-0.5 text-center font-medium text-gray-600 text-[10px] no-print placeholder:text-gray-300 italic">
+                                <div class="print-only text-center text-[10px]">{{ $item['location'] ?: ($item['location_placeholder'] ?: '---') }}</div>
+                            </td>
                             {{-- Hạn dùng --}}
                             <td class="px-3 py-1.5">
                                 <input type="date" wire:model="items.{{ $index }}.expiry_date" class="w-full bg-transparent border-0 focus:ring-1 focus:ring-blue-100 py-0.5 text-center font-medium text-gray-600 text-[10px] no-print">
-                                <div class="print-only text-center text-[10px]">{{ $item['expiry_date'] ? \Carbon\Carbon::parse($item['expiry_date'])->format('d/m/Y') : '---' }}</div>
+                                <div class="print-only text-center text-[10px]">{{ ($item['expiry_date'] ?? null) ? \Carbon\Carbon::parse($item['expiry_date'])->format('d/m/Y') : '---' }}</div>
                             </td>
                             <td class="px-5 py-1.5 text-center">
                                 <span class="text-[10px] font-black text-gray-500 uppercase tracking-tighter">{{ $item['unit'] ?? '---' }}</span>

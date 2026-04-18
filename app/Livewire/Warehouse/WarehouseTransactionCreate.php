@@ -54,6 +54,11 @@ class WarehouseTransactionCreate extends Component
                     'quantity' => 1,
                     'price' => (float)$product->price,
                     'amount' => (float)$product->price,
+                    'manufacturer_name' => $product->brand ?? '',
+                    'batch_number' => '',
+                    'location' => '',
+                    'location_placeholder' => $product->location ?? '',
+                    'expiry_date' => '',
                     'search' => ($this->warehouse_code === 'FINISHED_GOODS' ? '[' . $product->code . '] ' : '') . $product->name,
                     'checked' => true, // Mặc định được chọn để in
                 ];
@@ -94,6 +99,8 @@ class WarehouseTransactionCreate extends Component
             'amount' => 0,
             'manufacturer_name' => '',
             'batch_number' => '',
+            'location' => '',
+            'location_placeholder' => '',
             'expiry_date' => '',
             'search' => '',
             'checked' => true,
@@ -140,6 +147,7 @@ class WarehouseTransactionCreate extends Component
             $this->items[$index]['unit'] = $product->unit;
             $this->items[$index]['price'] = (float)$product->price;
             $this->items[$index]['manufacturer_name'] = $product->brand ?? '';
+            $this->items[$index]['location_placeholder'] = $product->location ?? '';
             $this->items[$index]['search'] = ($this->warehouse_code === 'FINISHED_GOODS' ? '[' . $product->code . '] ' : '') . $product->name;
             $this->updateAmount($index);
         }
@@ -233,6 +241,7 @@ class WarehouseTransactionCreate extends Component
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['price'],
                     'batch_number' => $item['batch_number'] ?: 'KHO_BANDAU',
+                    'location' => $item['location'] ?: null,
                     'expiry_date' => $item['expiry_date'] ?: null,
                     'manufacturer_name' => $item['manufacturer_name'] ?: null,
                     'partner_name' => $this->partner_name,
@@ -257,11 +266,17 @@ class WarehouseTransactionCreate extends Component
                         'warehouse_id' => $warehouseId,
                     ],
                     [
+                        'location' => $item['location'] ?: null,
                         'expiry_date' => $item['expiry_date'] ?: null,
                         'manufacturer_name' => $item['manufacturer_name'] ?: null,
                         'quantity' => 0
                     ]
                 );
+                
+                // Nếu lô đã tồn tại và chưa có vị trí, hoặc muốn cập nhật vị trí mới nhất khi nhập kho
+                if (!$batch->wasRecentlyCreated && $this->type === 'import' && ($item['location'] ?? '')) {
+                    $batch->update(['location' => $item['location']]);
+                }
 
                 if ($this->type === 'import') {
                     $inventory->increment('quantity', $item['quantity']);

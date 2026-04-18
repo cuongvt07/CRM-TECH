@@ -22,6 +22,25 @@ class WarehouseDashboard extends Component
     public $selectedItems = []; // For inventory bulk selection
     public $selectedTransactions = []; // For history bulk selection
     
+    public $filterExpiry = false; // Filter for expiring soon items
+    public $filterLowStock = false; // Filter for low stock items
+    
+    // Batch Edit Modal
+    public $showEditModal = false;
+    public $editingBatchId = null;
+    public $batchForm = [
+        'batch_number' => '',
+        'expiry_date' => '',
+        'manufacturer_name' => '',
+        'location' => '',
+        'quantity' => 0,
+        // Product Info
+        'product_name' => '',
+        'product_code' => '',
+        'product_unit' => '',
+        'product_min_stock' => 0,
+    ];
+    
     // History Filters
     public $historyFromDate = '';
     public $historyToDate = '';
@@ -137,6 +156,133 @@ class WarehouseDashboard extends Component
         $this->dispatch('notify', ['message' => "Đã phản hồi đơn hàng #{$orderId}", 'type' => 'success']);
     }
 
+    // --- BATCH MANAGEMENT ---
+    public function editBatch($id)
+    {
+        $batch = \App\Models\InventoryBatch::with('product')->findOrFail($id);
+        $product = $batch->product;
+
+        $this->editingBatchId = $id;
+        $this->batchForm = [
+            'batch_number' => $batch->batch_number,
+            'expiry_date' => $batch->expiry_date ? $batch->expiry_date->format('Y-m-d') : '',
+            'manufacturer_name' => $batch->manufacturer_name,
+            'location' => $batch->location,
+            'quantity' => (float)$batch->quantity,
+            // Product Info
+            'product_name' => $product->name,
+            'product_code' => $product->code,
+            'product_unit' => $product->unit,
+            'product_min_stock' => (float)$product->min_stock,
+        ];
+        $this->showEditModal = true;
+    }
+
+    public function saveBatch()
+    {
+        $this->validate([
+            'batchForm.batch_number' => 'required|string|max:50',
+            'batchForm.quantity' => 'required|numeric|min:0',
+            'batchForm.product_name' => 'required|string|max:255',
+            'batchForm.product_code' => 'required|string|max:100',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $batch = \App\Models\InventoryBatch::findOrFail($this->editingBatchId);
+            $oldQty = (float)$batch->quantity;
+            $newQty = (float)$this->batchForm['quantity'];
+            $delta = $newQty - $oldQty;
+
+            // 1. Cập nhật tồn tổng (Master Inventory)
+            if ($delta != 0) {
+                $inventory = Inventory::where('product_id', $batch->product_id)->first();
+                if ($inventory) {
+                    $inventory->increment('quantity', $delta);
+                }
+            }
+
+            // 2. Cập nhật bản ghi Sản phẩm
+            $product = $batch->product;
+            $product->update([
+                'name' => $this->batchForm['product_name'],
+                'code' => $this->batchForm['product_code'],
+                'unit' => $this->batchForm['product_unit'],
+                'min_stock' => $this->batchForm['product_min_stock'],
+            ]);
+
+            // 3. Cập nhật bản ghi lô
+            $batch->update([
+                'batch_number' => $this->batchForm['batch_number'],
+                'expiry_date' => $this->batchForm['expiry_date'] ?: null,
+                'manufacturer_name' => $this->batchForm['manufacturer_name'] ?: null,
+                'location' => $this->batchForm['location'] ?: null,
+                'quantity' => $newQty,
+            ]);
+
+            DB::commit();
+            $this->showEditModal = false;
+            $this->dispatch('notify', ['message' => 'Cập nhật NVL và Lô hàng thành công!', 'type' => 'success']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->dispatch('notify', ['message' => 'Có lỗi xảy ra: ' . $e->getMessage(), 'type' => 'error']);
+        }
+    }
+
+    public function deleteBatch($id)
+    {
+        DB::beginTransaction();
+        try {
+            $batch = \App\Models\InventoryBatch::findOrFail($id);
+            $qty = (float)$batch->quantity;
+
+            // 1. Giảm tồn tổng
+            $inventory = Inventory::where('product_id', $batch->product_id)->first();
+            if ($inventory) {
+                $inventory->decrement('quantity', $qty);
+            }
+
+            // 2. Xóa lô
+            $batch->delete();
+
+            DB::commit();
+            $this->dispatch('notify', ['message' => 'Đã xóa lô hàng!', 'type' => 'info']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->dispatch('notify', ['message' => 'Lỗi khi xóa: ' . $e->getMessage(), 'type' => 'error']);
+        }
+    }
+
+    public function editSelected()
+    {
+        if (empty($this->selectedItems)) {
+            $this->dispatch('notify', ['message' => 'Vui lòng chọn lô hàng cần sửa!', 'type' => 'warning']);
+            return;
+        }
+
+        // Pick the first one (e.g., "prod-123")
+        $id = (int)str_replace('prod-', '', $this->selectedItems[0]);
+        $this->editBatch($id);
+    }
+
+    public function deleteSelected()
+    {
+        if (empty($this->selectedItems)) {
+            $this->dispatch('notify', ['message' => 'Vui lòng chọn các lô hàng cần xóa!', 'type' => 'warning']);
+            return;
+        }
+
+        $count = 0;
+        foreach ($this->selectedItems as $itemStr) {
+            $id = (int)str_replace('prod-', '', $itemStr);
+            $this->deleteBatch($id);
+            $count++;
+        }
+
+        $this->selectedItems = [];
+        $this->dispatch('notify', ['message' => "Đã xóa {$count} lô hàng đã chọn!", 'type' => 'info']);
+    }
+
     public function confirmProductionRequest($productionOrderId, $status)
     {
         $po = ProductionOrder::findOrFail($productionOrderId);
@@ -192,8 +338,49 @@ class WarehouseDashboard extends Component
     {
         $warehouses = Warehouse::all();
 
-        // ===== Tồn kho chi tiết theo Lô (Batch-level Inventory) =====
-        $inventoryQuery = \App\Models\InventoryBatch::with(['product.warehouse', 'warehouse']);
+        $inventoryQuery = \App\Models\InventoryBatch::with(['product.warehouse', 'warehouse'])
+            ->select('inventory_batches.*')
+            ->addSelect([
+                'batch_unit_price' => InventoryTransaction::select('unit_price')
+                    ->whereColumn('product_id', 'inventory_batches.product_id')
+                    ->whereColumn('batch_number', 'inventory_batches.batch_number')
+                    ->where('type', 'import')
+                    ->latest('id')
+                    ->limit(1)
+            ]);
+
+        // Tính số lượng lô hàng sắp hết hạn (< 6 tháng)
+        $expiringCount = (clone $inventoryQuery)
+            ->whereNotNull('expiry_date')
+            ->where('expiry_date', '<=', now()->addMonths(6))
+            ->where('expiry_date', '>', now()) // Chưa hết hạn hẳn
+            ->count();
+
+        if ($this->filterExpiry) {
+            $inventoryQuery->whereNotNull('expiry_date')
+                ->where('expiry_date', '<=', now()->addMonths(6))
+                ->where('expiry_date', '>', now());
+        }
+
+        // Tính số lượng mặt hạng dưới định mức (Tồn tối thiểu)
+        $lowStockQuery = Product::where('min_stock', '>', 0)
+            ->whereHas('inventory', function($q) {
+                $q->whereColumn('quantity', '<', 'products.min_stock');
+            });
+        
+        if ($this->filterWarehouse) {
+            $lowStockQuery->where('warehouse_id', $this->filterWarehouse);
+        }
+        $lowStockCount = $lowStockQuery->count();
+
+        if ($this->filterLowStock) {
+            $inventoryQuery->whereHas('product', function($q) {
+                $q->where('min_stock', '>', 0)
+                  ->whereHas('inventory', function($sq) {
+                      $sq->whereColumn('quantity', '<', 'products.min_stock');
+                  });
+            });
+        }
 
         if ($this->filterWarehouse) {
             $inventoryQuery->where('warehouse_id', $this->filterWarehouse);
@@ -256,6 +443,8 @@ class WarehouseDashboard extends Component
             'pendingOrders' => $pendingOrders,
             'pendingProductionOrders' => $pendingProductionOrders,
             'totalPending' => $pendingOrders->count() + $pendingProductionOrders->count(),
+            'expiringCount' => $expiringCount,
+            'lowStockCount' => $lowStockCount,
         ]);
     }
 }
